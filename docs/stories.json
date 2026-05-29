@@ -1,0 +1,2028 @@
+{
+  "productName": "The Barber Shop",
+  "backlogVersion": "v1.0",
+  "releaseType": "polished_production_ready_v1",
+  "productScope": {
+    "included": [
+      "Public mobile-first booking website",
+      "Barber/owner web dashboard",
+      "Guest booking",
+      "Hosted direct booking page",
+      "Service and add-on selection",
+      "Configurable availability",
+      "Optional or required deposits",
+      "Stripe payments",
+      "Link Agents / Link CLI agentic payments",
+      "Digital tipping",
+      "Full appointment messaging",
+      "SMS and email notifications",
+      "Refunds and payment exceptions",
+      "CSV exports",
+      "Calendar sync",
+      "Audit logs",
+      "Security and privacy controls",
+      "Production monitoring"
+    ],
+    "excluded": [
+      "Marketplace discovery",
+      "Multi-barber onboarding",
+      "Multi-location management",
+      "Native iOS app",
+      "Native Android app",
+      "Embeddable booking widget",
+      "Booth rent",
+      "Accounting integrations"
+    ]
+  },
+  "defaultDefinitions": {
+    "priorities": {
+      "P0": "Required for launch",
+      "P1": "Important for production v1",
+      "P2": "Useful but can follow after launch if needed"
+    },
+    "issueTypes": [
+      "Epic",
+      "Story",
+      "Task",
+      "Integration",
+      "Security",
+      "Reporting"
+    ],
+    "statuses": [
+      "Backlog",
+      "Ready",
+      "In Progress",
+      "Blocked",
+      "In QA",
+      "Done"
+    ]
+  },
+  "epics": [
+    {
+      "key": "TBS-EP-001",
+      "issueType": "Epic",
+      "summary": "Public Mobile-First Booking Website",
+      "description": "Build the hosted public booking experience customers use to view services, select appointment times, enter contact information, review policies, pay if required, and receive confirmation.",
+      "priority": "P0",
+      "status": "Backlog",
+      "ownerRole": "Product / Frontend / Backend",
+      "labels": [
+        "customer_experience",
+        "booking",
+        "mobile_first",
+        "v1"
+      ],
+      "epicAcceptanceCriteria": [
+        "Customers can complete a booking from a hosted barber booking page.",
+        "The booking experience is optimized for mobile devices.",
+        "Customers can book without creating an account.",
+        "Customers see service price, duration, deposit requirement, and cancellation policy before confirming.",
+        "The system supports secure appointment access links after booking."
+      ],
+      "tickets": [
+        {
+          "key": "TBS-001",
+          "issueType": "Story",
+          "summary": "Create hosted public barber booking page",
+          "description": "As a customer, I want to open the barber's direct booking page so I can view the business, services, and available appointment options.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Frontend",
+          "dependencies": [],
+          "labels": [
+            "public_site",
+            "booking_page"
+          ],
+          "acceptanceCriteria": [
+            "The public booking page is accessible through a hosted URL.",
+            "The page displays barber/business name, hero image or profile image, and basic business information.",
+            "The page displays available services and starting prices.",
+            "The page works on mobile, tablet, and desktop.",
+            "The page has clear calls to action for starting a booking."
+          ]
+        },
+        {
+          "key": "TBS-002",
+          "issueType": "Story",
+          "summary": "Display services and optional add-ons",
+          "description": "As a customer, I want to select one primary service and optional add-ons so the appointment reflects what I need.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Frontend / Backend",
+          "dependencies": [
+            "TBS-001"
+          ],
+          "labels": [
+            "services",
+            "add_ons",
+            "booking"
+          ],
+          "acceptanceCriteria": [
+            "Customer can select exactly one primary service.",
+            "Customer can select zero or more optional add-ons.",
+            "Each service displays name, description, price, and duration.",
+            "Each add-on displays name, price, and duration.",
+            "Total appointment price and duration update when add-ons are selected."
+          ]
+        },
+        {
+          "key": "TBS-003",
+          "issueType": "Story",
+          "summary": "Calculate total appointment price and duration",
+          "description": "As a customer, I want the system to calculate the full appointment cost and duration before I book.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Backend",
+          "dependencies": [
+            "TBS-002"
+          ],
+          "labels": [
+            "pricing",
+            "duration",
+            "booking"
+          ],
+          "acceptanceCriteria": [
+            "Total price includes the selected primary service and all add-ons.",
+            "Total duration includes the selected primary service and all add-ons.",
+            "The calculated duration is used when showing available appointment slots.",
+            "The calculated total is shown before the customer confirms the booking.",
+            "The system prevents booking if required pricing or duration data is missing."
+          ]
+        },
+        {
+          "key": "TBS-004",
+          "issueType": "Story",
+          "summary": "Build date and time selection flow",
+          "description": "As a customer, I want to choose an available date and time for my selected service.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Frontend / Backend",
+          "dependencies": [
+            "TBS-003",
+            "TBS-012"
+          ],
+          "labels": [
+            "availability",
+            "calendar",
+            "booking"
+          ],
+          "acceptanceCriteria": [
+            "Customer can view available dates and times.",
+            "Unavailable slots are not shown as bookable.",
+            "Available slots account for selected service duration, add-ons, buffers, blocked time, and business hours.",
+            "Customer can change selected service/add-ons and see updated availability.",
+            "Selected appointment time is shown clearly before confirmation."
+          ]
+        },
+        {
+          "key": "TBS-005",
+          "issueType": "Story",
+          "summary": "Support guest booking contact form",
+          "description": "As a customer, I want to book without creating an account by entering only required contact information.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Frontend / Backend",
+          "dependencies": [
+            "TBS-004"
+          ],
+          "labels": [
+            "guest_booking",
+            "customer_identity"
+          ],
+          "acceptanceCriteria": [
+            "Customer can enter name, phone number, and email address.",
+            "Customer is not required to create an account before booking.",
+            "Phone and email fields are validated before submission.",
+            "Customer contact information is attached to the appointment record.",
+            "Optional account creation can be offered after booking confirmation."
+          ]
+        },
+        {
+          "key": "TBS-006",
+          "issueType": "Story",
+          "summary": "Show booking review and policy acknowledgement step",
+          "description": "As a customer, I want to review appointment details, payment requirements, and policies before confirming.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Frontend",
+          "dependencies": [
+            "TBS-005",
+            "TBS-020"
+          ],
+          "labels": [
+            "policy",
+            "review_step",
+            "checkout"
+          ],
+          "acceptanceCriteria": [
+            "Review step shows selected service, add-ons, date, time, total price, duration, and deposit requirement.",
+            "Review step shows cancellation and no-show policy.",
+            "Customer must explicitly acknowledge the policy before confirming.",
+            "If payment is required, the customer is directed to payment after policy acknowledgement.",
+            "If payment is not required, the appointment can confirm after policy acknowledgement."
+          ]
+        },
+        {
+          "key": "TBS-007",
+          "issueType": "Story",
+          "summary": "Create booking confirmation screen",
+          "description": "As a customer, I want a clear confirmation screen after booking so I know my appointment is scheduled.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Frontend / Backend",
+          "dependencies": [
+            "TBS-006",
+            "TBS-025"
+          ],
+          "labels": [
+            "confirmation",
+            "booking"
+          ],
+          "acceptanceCriteria": [
+            "Confirmation screen displays appointment date, time, service, duration, and location/business details.",
+            "Confirmation screen displays payment/deposit status.",
+            "Confirmation screen provides a secure appointment management link.",
+            "Confirmation screen explains how to cancel, reschedule, message, or pay remaining balance.",
+            "Customer receives confirmation notification after successful booking."
+          ]
+        }
+      ]
+    },
+    {
+      "key": "TBS-EP-002",
+      "issueType": "Epic",
+      "summary": "Scheduling, Availability, and Appointment Lifecycle",
+      "description": "Implement the core scheduling engine, availability rules, slot holds, appointment statuses, rescheduling, cancellations, walk-ins, blocked time, and conflict prevention.",
+      "priority": "P0",
+      "status": "Backlog",
+      "ownerRole": "Backend / Frontend",
+      "labels": [
+        "scheduling",
+        "availability",
+        "appointments",
+        "v1"
+      ],
+      "epicAcceptanceCriteria": [
+        "Customers only see valid available appointment times.",
+        "The system prevents double-booking.",
+        "Appointment statuses clearly reflect the current lifecycle state.",
+        "Customers can self-reschedule once per booking.",
+        "Barber/admin can override appointment actions with audit logging."
+      ],
+      "tickets": [
+        {
+          "key": "TBS-008",
+          "issueType": "Story",
+          "summary": "Configure business hours and booking windows",
+          "description": "As an owner/admin, I want to configure business hours and booking windows so customers only book valid times.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Backend / Dashboard",
+          "dependencies": [],
+          "labels": [
+            "availability",
+            "settings"
+          ],
+          "acceptanceCriteria": [
+            "Admin can configure business days and hours.",
+            "Admin can configure minimum booking notice.",
+            "Admin can configure maximum future booking window.",
+            "Configured hours are used by the customer booking calendar.",
+            "Changes to availability settings are audit logged."
+          ]
+        },
+        {
+          "key": "TBS-009",
+          "issueType": "Story",
+          "summary": "Configure slot intervals and buffer times",
+          "description": "As an owner/admin, I want to configure slot intervals and buffers so appointments fit the barber's workflow.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Backend / Dashboard",
+          "dependencies": [
+            "TBS-008"
+          ],
+          "labels": [
+            "availability",
+            "buffer_time"
+          ],
+          "acceptanceCriteria": [
+            "Admin can configure slot intervals such as 15, 30, or 60 minutes.",
+            "Admin can configure buffer time between appointments.",
+            "Availability calculations include buffer time.",
+            "Customer-facing time slots respect configured slot intervals.",
+            "Changes to slot intervals or buffers are audit logged."
+          ]
+        },
+        {
+          "key": "TBS-010",
+          "issueType": "Story",
+          "summary": "Support manual blocked time and closed days",
+          "description": "As a barber, I want to block time for breaks, errands, vacations, or closures so customers cannot book unavailable periods.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Dashboard / Backend",
+          "dependencies": [
+            "TBS-008"
+          ],
+          "labels": [
+            "blocked_time",
+            "calendar"
+          ],
+          "acceptanceCriteria": [
+            "Barber can create manual blocked time from the dashboard.",
+            "Admin can create closed days or vacation periods.",
+            "Blocked time is excluded from customer availability.",
+            "Blocked time can be edited or deleted by authorized users.",
+            "Blocked time changes are audit logged."
+          ]
+        },
+        {
+          "key": "TBS-011",
+          "issueType": "Story",
+          "summary": "Add walk-in appointments from dashboard",
+          "description": "As a barber, I want to add walk-ins so offline appointments are represented in the schedule.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Dashboard / Backend",
+          "dependencies": [
+            "TBS-036"
+          ],
+          "labels": [
+            "walk_ins",
+            "appointments"
+          ],
+          "acceptanceCriteria": [
+            "Barber can create a walk-in appointment from the dashboard.",
+            "Walk-in appointment includes customer name, service, time, and payment status if available.",
+            "Walk-in appointment blocks the selected time from online booking.",
+            "Walk-ins appear in the calendar and appointments list.",
+            "Walk-in creation is audit logged."
+          ]
+        },
+        {
+          "key": "TBS-012",
+          "issueType": "Story",
+          "summary": "Build availability calculation engine",
+          "description": "As the system, I need to calculate valid appointment slots using services, add-ons, business hours, buffers, blocks, and existing appointments.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Backend",
+          "dependencies": [
+            "TBS-008",
+            "TBS-009",
+            "TBS-010"
+          ],
+          "labels": [
+            "availability_engine",
+            "backend"
+          ],
+          "acceptanceCriteria": [
+            "Availability engine accounts for service duration and add-on duration.",
+            "Availability engine excludes blocked time and closed days.",
+            "Availability engine excludes existing confirmed appointments.",
+            "Availability engine respects minimum notice and future booking window.",
+            "Availability engine returns only bookable slots to the customer booking flow."
+          ]
+        },
+        {
+          "key": "TBS-013",
+          "issueType": "Story",
+          "summary": "Implement temporary slot hold during checkout",
+          "description": "As the system, I need to temporarily hold a selected appointment slot during checkout so another customer cannot confirm it at the same time.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Backend",
+          "dependencies": [
+            "TBS-012"
+          ],
+          "labels": [
+            "slot_hold",
+            "conflict_prevention"
+          ],
+          "acceptanceCriteria": [
+            "Selected slot is temporarily held when customer begins final booking/payment step.",
+            "Held slot is not available to other customers during the hold window.",
+            "Default hold duration is approximately 5 minutes unless configured otherwise.",
+            "If payment or confirmation does not complete before hold expiration, the slot is released.",
+            "If two customers attempt the same slot, only the first successful confirmation/payment can secure it."
+          ]
+        },
+        {
+          "key": "TBS-014",
+          "issueType": "Story",
+          "summary": "Implement appointment lifecycle statuses",
+          "description": "As the system, I need appointment statuses that accurately represent booking, payment, attendance, cancellation, and refund outcomes.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Backend",
+          "dependencies": [
+            "TBS-013"
+          ],
+          "labels": [
+            "appointment_status",
+            "lifecycle"
+          ],
+          "acceptanceCriteria": [
+            "System supports Slot Available, Slot Held, Pending Payment, Confirmed, Upcoming, Checked In, Completed, Final Payment Due, Final Payment Paid, Canceled, No-Show, Refunded, Deposit Forfeited, and No Penalty states.",
+            "Each appointment has one current primary status.",
+            "Payment-related sub-statuses are visible where relevant.",
+            "Status changes are visible in dashboard and customer appointment view where appropriate.",
+            "Sensitive status changes are audit logged."
+          ]
+        },
+        {
+          "key": "TBS-015",
+          "issueType": "Story",
+          "summary": "Support customer self-cancellation",
+          "description": "As a customer, I want to cancel from my secure appointment link so I do not need to call or text.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Frontend / Backend",
+          "dependencies": [
+            "TBS-014",
+            "TBS-020"
+          ],
+          "labels": [
+            "cancellation",
+            "customer_self_service"
+          ],
+          "acceptanceCriteria": [
+            "Customer can cancel from the secure appointment link.",
+            "Customer sees whether cancellation is inside or outside the policy window.",
+            "Customer sees whether deposit will be refunded, forfeited, or unaffected before confirming cancellation.",
+            "Canceled appointment releases the slot when applicable.",
+            "Cancellation notification is sent to customer and barber."
+          ]
+        },
+        {
+          "key": "TBS-016",
+          "issueType": "Story",
+          "summary": "Support one customer self-service reschedule per booking",
+          "description": "As a customer, I want to reschedule once from my appointment link, while the business limits repeated rescheduling.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Frontend / Backend",
+          "dependencies": [
+            "TBS-014",
+            "TBS-020"
+          ],
+          "labels": [
+            "rescheduling",
+            "customer_self_service"
+          ],
+          "acceptanceCriteria": [
+            "Customer can self-reschedule one time per booking.",
+            "Customer cannot self-reschedule again after the first successful self-reschedule.",
+            "Customer is informed before confirming that only one self-service reschedule is allowed.",
+            "Rescheduled appointment respects availability rules.",
+            "After self-reschedule limit is used, customer must contact barber through messaging for further changes."
+          ]
+        },
+        {
+          "key": "TBS-017",
+          "issueType": "Story",
+          "summary": "Support barber/admin manual reschedule override",
+          "description": "As a barber/admin, I want to manually reschedule appointments when exceptions are approved.",
+          "priority": "P1",
+          "status": "Backlog",
+          "ownerRole": "Dashboard / Backend",
+          "dependencies": [
+            "TBS-016",
+            "TBS-047"
+          ],
+          "labels": [
+            "rescheduling",
+            "override",
+            "audit"
+          ],
+          "acceptanceCriteria": [
+            "Barber/admin can manually reschedule an appointment from the dashboard.",
+            "Manual reschedule can override customer self-reschedule limit.",
+            "Manual reschedule requires a reason note.",
+            "Manual reschedule updates customer and barber notifications.",
+            "Manual reschedule action is audit logged."
+          ]
+        },
+        {
+          "key": "TBS-018",
+          "issueType": "Story",
+          "summary": "Mark appointments checked in, completed, canceled, or no-show",
+          "description": "As a barber, I want to update appointment attendance and completion statuses from the dashboard.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Dashboard / Backend",
+          "dependencies": [
+            "TBS-014",
+            "TBS-036"
+          ],
+          "labels": [
+            "appointment_management",
+            "dashboard"
+          ],
+          "acceptanceCriteria": [
+            "Barber can mark appointment as checked in.",
+            "Barber can mark appointment as completed.",
+            "Barber can mark appointment as canceled.",
+            "Barber can mark appointment as no-show.",
+            "No-show and cancellation outcomes apply configured deposit/payment policy."
+          ]
+        }
+      ]
+    },
+    {
+      "key": "TBS-EP-003",
+      "issueType": "Epic",
+      "summary": "Deposits, Payments, Refunds, and Tips",
+      "description": "Implement Stripe/web checkout, optional deposits, remaining balance collection, payment links, in-person payment tracking, digital tipping, refunds, forfeitures, disputes, and payment exception handling.",
+      "priority": "P0",
+      "status": "Backlog",
+      "ownerRole": "Backend / Payments",
+      "labels": [
+        "payments",
+        "stripe",
+        "deposits",
+        "tips",
+        "v1"
+      ],
+      "epicAcceptanceCriteria": [
+        "Admin can configure whether deposits are required, optional, or disabled.",
+        "Customers can pay deposits and remaining balances online when required.",
+        "Customers can tip digitally.",
+        "Admin can issue refunds and override deposit outcomes.",
+        "Payment events are reflected in appointment status and audit logs."
+      ],
+      "tickets": [
+        {
+          "key": "TBS-019",
+          "issueType": "Integration",
+          "summary": "Integrate Stripe/web checkout for deposit payments",
+          "description": "As a customer, I want to pay a required deposit online so my appointment can be confirmed.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Backend / Payments",
+          "dependencies": [
+            "TBS-006",
+            "TBS-013"
+          ],
+          "labels": [
+            "stripe",
+            "checkout",
+            "deposit"
+          ],
+          "acceptanceCriteria": [
+            "Customer is sent to Stripe/web checkout when deposit payment is required.",
+            "Appointment remains Pending Payment until successful payment confirmation.",
+            "Appointment becomes Confirmed after successful required deposit payment.",
+            "Failed payment prevents appointment confirmation.",
+            "Payment result is stored on the appointment record."
+          ]
+        },
+        {
+          "key": "TBS-020",
+          "issueType": "Story",
+          "summary": "Configure deposit and cancellation policy rules",
+          "description": "As an owner/admin, I want to configure deposit and cancellation rules so the platform matches the business policy.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Dashboard / Backend",
+          "dependencies": [],
+          "labels": [
+            "deposit_policy",
+            "cancellation_policy",
+            "admin_settings"
+          ],
+          "acceptanceCriteria": [
+            "Admin can set deposit as required, optional, or disabled.",
+            "Admin can configure service-specific deposit amount or percentage.",
+            "Admin can configure cancellation window, defaulting to 24 hours.",
+            "Admin can configure late cancellation and no-show deposit forfeiture behavior.",
+            "Policy changes are audit logged."
+          ]
+        },
+        {
+          "key": "TBS-021",
+          "issueType": "Story",
+          "summary": "Support no-deposit booking confirmation",
+          "description": "As an admin, I want bookings to confirm without payment when deposits are disabled.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Backend",
+          "dependencies": [
+            "TBS-020"
+          ],
+          "labels": [
+            "no_deposit",
+            "booking_confirmation"
+          ],
+          "acceptanceCriteria": [
+            "If deposit is disabled, customer can confirm booking after contact info and policy acknowledgement.",
+            "No payment step is required when deposit is disabled.",
+            "Appointment status becomes Confirmed after successful no-deposit booking.",
+            "No-show and late cancellation financial penalties default to no penalty if no payment method exists.",
+            "No-deposit booking behavior follows admin-configured rules."
+          ]
+        },
+        {
+          "key": "TBS-022",
+          "issueType": "Story",
+          "summary": "Collect remaining balance after appointment",
+          "description": "As a customer, I want to pay the remaining balance after the haircut using online or offline options.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Payments / Dashboard",
+          "dependencies": [
+            "TBS-018",
+            "TBS-019"
+          ],
+          "labels": [
+            "remaining_balance",
+            "checkout"
+          ],
+          "acceptanceCriteria": [
+            "System calculates remaining balance after deposit is applied.",
+            "Customer can pay remaining balance through web checkout.",
+            "Barber/admin can mark remaining balance as paid in person.",
+            "Payment status updates to Final Payment Paid after successful collection.",
+            "Receipt is generated after final payment."
+          ]
+        },
+        {
+          "key": "TBS-023",
+          "issueType": "Story",
+          "summary": "Support payment links",
+          "description": "As a barber/admin, I want to generate payment links for deposits, remaining balances, or tips so customers can pay from SMS/email/chat.",
+          "priority": "P1",
+          "status": "Backlog",
+          "ownerRole": "Payments / Dashboard",
+          "dependencies": [
+            "TBS-019",
+            "TBS-022"
+          ],
+          "labels": [
+            "payment_links",
+            "payments"
+          ],
+          "acceptanceCriteria": [
+            "Admin/barber can generate a payment link for an appointment balance.",
+            "Payment link can be sent through chat, SMS, or email.",
+            "Payment link shows amount, appointment reference, and payment purpose.",
+            "Payment status updates after successful payment through the link.",
+            "Expired or already-paid links cannot be reused incorrectly."
+          ]
+        },
+        {
+          "key": "TBS-024",
+          "issueType": "Story",
+          "summary": "Support digital tipping",
+          "description": "As a customer, I want to tip digitally during or after final checkout.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Payments / Frontend",
+          "dependencies": [
+            "TBS-022"
+          ],
+          "labels": [
+            "tips",
+            "checkout"
+          ],
+          "acceptanceCriteria": [
+            "Customer can add a tip during final online checkout.",
+            "Customer can tip from a post-appointment receipt/payment link.",
+            "Tip presets include common percentage options such as 15%, 20%, and 25%.",
+            "Customer can enter a custom tip amount.",
+            "Tip amount is visible in barber/admin dashboard."
+          ]
+        },
+        {
+          "key": "TBS-025",
+          "issueType": "Integration",
+          "summary": "Implement payment webhooks and status sync",
+          "description": "As the system, I need payment provider events to update appointment and payment records reliably.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Backend / Payments",
+          "dependencies": [
+            "TBS-019"
+          ],
+          "labels": [
+            "webhooks",
+            "payment_status",
+            "reliability"
+          ],
+          "acceptanceCriteria": [
+            "Payment success webhook updates appointment/payment status.",
+            "Payment failure webhook updates appointment/payment status.",
+            "Refund webhook updates refund status.",
+            "Webhook handling is idempotent.",
+            "Webhook failures are logged and retried safely."
+          ]
+        },
+        {
+          "key": "TBS-026",
+          "issueType": "Story",
+          "summary": "Support admin-issued refunds",
+          "description": "As an owner/admin, I want to issue refunds from the dashboard so I can handle cancellations and exceptions.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Payments / Dashboard",
+          "dependencies": [
+            "TBS-025",
+            "TBS-047"
+          ],
+          "labels": [
+            "refunds",
+            "admin",
+            "audit"
+          ],
+          "acceptanceCriteria": [
+            "Admin can issue full or partial refund from the dashboard.",
+            "Refund action requires confirmation.",
+            "Refund action requires or supports a reason note.",
+            "Refund status is visible on the appointment/payment record.",
+            "Refund action is audit logged."
+          ]
+        },
+        {
+          "key": "TBS-027",
+          "issueType": "Story",
+          "summary": "Support deposit refund and forfeiture overrides",
+          "description": "As an owner/admin, I want to manually override deposit refund or forfeiture outcomes when exceptions occur.",
+          "priority": "P1",
+          "status": "Backlog",
+          "ownerRole": "Payments / Dashboard",
+          "dependencies": [
+            "TBS-020",
+            "TBS-026"
+          ],
+          "labels": [
+            "deposit_forfeiture",
+            "override",
+            "audit"
+          ],
+          "acceptanceCriteria": [
+            "Admin can override deposit outcome to refunded, forfeited, or no penalty.",
+            "Override requires a reason note.",
+            "Override updates appointment payment status.",
+            "Customer notification is sent if configured.",
+            "Override is audit logged."
+          ]
+        },
+        {
+          "key": "TBS-028",
+          "issueType": "Story",
+          "summary": "Show disputes, chargebacks, and failed payments",
+          "description": "As an owner/admin, I want visibility into disputes, chargebacks, and failed payments so I can manage payment risk.",
+          "priority": "P1",
+          "status": "Backlog",
+          "ownerRole": "Payments / Dashboard",
+          "dependencies": [
+            "TBS-025"
+          ],
+          "labels": [
+            "disputes",
+            "chargebacks",
+            "failed_payments"
+          ],
+          "acceptanceCriteria": [
+            "Dashboard displays failed payment records.",
+            "Dashboard displays dispute or chargeback status when available.",
+            "Admin can view appointment/customer/payment context for payment exceptions.",
+            "Admin can add internal notes to payment exceptions.",
+            "Payment exception notes are retained with audit history."
+          ]
+        }
+      ]
+    },
+    {
+      "key": "TBS-EP-004",
+      "issueType": "Epic",
+      "summary": "Link Agents and Agentic Payments",
+      "description": "Support customer-side agentic booking and payment using Link Agents, including structured booking metadata, agent-initiated booking, programmatic payment, virtual-card fallback, and payment approval handling.",
+      "priority": "P0",
+      "status": "Backlog",
+      "ownerRole": "Backend / Payments / Platform",
+      "labels": [
+        "link_agents",
+        "agentic_payments",
+        "api",
+        "v1"
+      ],
+      "epicAcceptanceCriteria": [
+        "Agents can read structured booking information without scraping the UI.",
+        "Agents can initiate booking/payment flows.",
+        "Customer approval is required before agent-initiated payment succeeds.",
+        "Programmatic payment is preferred where supported.",
+        "Virtual-card checkout fallback is supported."
+      ],
+      "tickets": [
+        {
+          "key": "TBS-029",
+          "issueType": "Task",
+          "summary": "Define agent-readable booking metadata schema",
+          "description": "As a customer-side agent, I need structured booking data so I can understand services, prices, policies, and availability.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Backend / Platform",
+          "dependencies": [
+            "TBS-002",
+            "TBS-012",
+            "TBS-020"
+          ],
+          "labels": [
+            "metadata",
+            "agent_schema",
+            "api"
+          ],
+          "acceptanceCriteria": [
+            "Schema includes services, add-ons, prices, durations, deposits, policies, and available slots.",
+            "Schema includes booking action endpoints or instructions.",
+            "Schema is versioned.",
+            "Schema avoids exposing unnecessary customer or admin data.",
+            "Schema can be consumed by an agent without relying on UI scraping."
+          ]
+        },
+        {
+          "key": "TBS-030",
+          "issueType": "Integration",
+          "summary": "Expose structured booking metadata endpoint",
+          "description": "As a customer-side agent, I want to retrieve structured booking data from the booking page.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Backend",
+          "dependencies": [
+            "TBS-029"
+          ],
+          "labels": [
+            "agent_endpoint",
+            "api",
+            "metadata"
+          ],
+          "acceptanceCriteria": [
+            "Endpoint returns current services, add-ons, prices, durations, policies, and availability.",
+            "Endpoint response follows the approved metadata schema.",
+            "Endpoint does not expose private dashboard data.",
+            "Endpoint handles unavailable or outdated slot data safely.",
+            "Endpoint response includes schema version."
+          ]
+        },
+        {
+          "key": "TBS-031",
+          "issueType": "Integration",
+          "summary": "Support agent-initiated booking request",
+          "description": "As a customer-side agent, I want to initiate a booking request for a selected service, time, and customer.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Backend / Platform",
+          "dependencies": [
+            "TBS-030",
+            "TBS-013"
+          ],
+          "labels": [
+            "agent_booking",
+            "api"
+          ],
+          "acceptanceCriteria": [
+            "Agent can submit selected service, add-ons, appointment time, and customer contact details.",
+            "System creates a temporary slot hold for valid agent-initiated booking requests.",
+            "System rejects invalid, unavailable, or expired slot requests.",
+            "System returns payment requirements and next action.",
+            "Agent-initiated booking does not bypass customer approval or policy rules."
+          ]
+        },
+        {
+          "key": "TBS-032",
+          "issueType": "Integration",
+          "summary": "Implement Link programmatic payment path",
+          "description": "As a customer-side agent, I want to complete payment through a programmatic Link-supported flow when available.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Payments / Platform",
+          "dependencies": [
+            "TBS-031",
+            "TBS-025"
+          ],
+          "labels": [
+            "link_agents",
+            "programmatic_payment"
+          ],
+          "acceptanceCriteria": [
+            "System can create or process a Link-compatible payment request for an agent-initiated booking.",
+            "Customer approval is required before payment succeeds.",
+            "Payment result updates appointment status.",
+            "Programmatic payment failure prevents payment-required booking confirmation.",
+            "Payment flow does not expose raw payment credentials to the application."
+          ]
+        },
+        {
+          "key": "TBS-033",
+          "issueType": "Integration",
+          "summary": "Support Link virtual-card checkout fallback",
+          "description": "As a customer-side agent, I want to use a virtual-card fallback when programmatic payment is not supported.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Payments / Frontend / Platform",
+          "dependencies": [
+            "TBS-019",
+            "TBS-031"
+          ],
+          "labels": [
+            "link_agents",
+            "virtual_card",
+            "fallback"
+          ],
+          "acceptanceCriteria": [
+            "Agentic flow can fall back to normal checkout when programmatic payment is unavailable.",
+            "Virtual-card payment follows standard checkout payment rules.",
+            "Appointment confirms only after successful payment when payment is required.",
+            "Failed virtual-card payment releases or expires the slot hold according to policy.",
+            "Fallback path is recorded as the payment method/source."
+          ]
+        },
+        {
+          "key": "TBS-034",
+          "issueType": "Story",
+          "summary": "Handle delayed, declined, or expired Link approval",
+          "description": "As the system, I need to handle pending Link approvals so appointment inventory is not blocked indefinitely.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Backend / Payments",
+          "dependencies": [
+            "TBS-032",
+            "TBS-033"
+          ],
+          "labels": [
+            "link_approval",
+            "slot_hold",
+            "edge_cases"
+          ],
+          "acceptanceCriteria": [
+            "If Link approval is pending, appointment remains unconfirmed.",
+            "Slot remains held only for the configured hold duration.",
+            "If approval is declined, appointment is not confirmed and slot is released.",
+            "If approval does not complete before hold expiration, slot is released.",
+            "Customer and agent receive clear failure or expiration state."
+          ]
+        },
+        {
+          "key": "TBS-035",
+          "issueType": "Task",
+          "summary": "Log and report Link payment outcomes",
+          "description": "As an owner/admin, I want visibility into Link payment attempts, approvals, declines, and expirations.",
+          "priority": "P1",
+          "status": "Backlog",
+          "ownerRole": "Backend / Dashboard",
+          "dependencies": [
+            "TBS-034",
+            "TBS-039"
+          ],
+          "labels": [
+            "link_agents",
+            "reporting",
+            "payments"
+          ],
+          "acceptanceCriteria": [
+            "Dashboard shows Link payment status on relevant appointment records.",
+            "System logs Link approval delays, declines, expirations, and successful payments.",
+            "Link payment attempts are included in payment reporting.",
+            "Admin can filter payment records by Link payment source.",
+            "Link payment failures are included in payment failure alerts."
+          ]
+        }
+      ]
+    },
+    {
+      "key": "TBS-EP-005",
+      "issueType": "Epic",
+      "summary": "Barber and Owner Dashboard",
+      "description": "Build the secure dashboard used by the barber and owner/admin to manage calendar, appointments, clients, messages, payments, settings, policies, reports, and operational exceptions.",
+      "priority": "P0",
+      "status": "Backlog",
+      "ownerRole": "Frontend / Backend",
+      "labels": [
+        "dashboard",
+        "admin",
+        "barber",
+        "v1"
+      ],
+      "epicAcceptanceCriteria": [
+        "Barber can manage daily operations from the dashboard.",
+        "Owner/admin can configure services, prices, availability, policies, and payment settings.",
+        "Dashboard provides visibility into appointments, payments, messages, and reports.",
+        "Sensitive dashboard actions are permission-controlled.",
+        "Operational changes are audit logged."
+      ],
+      "tickets": [
+        {
+          "key": "TBS-036",
+          "issueType": "Story",
+          "summary": "Build dashboard shell and navigation",
+          "description": "As a barber/admin, I want a dashboard with clear navigation so I can access calendar, appointments, clients, messages, payments, settings, and reports.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Frontend",
+          "dependencies": [
+            "TBS-045"
+          ],
+          "labels": [
+            "dashboard",
+            "navigation"
+          ],
+          "acceptanceCriteria": [
+            "Dashboard includes navigation for Calendar, Appointments, Clients, Messages, Payments, Services, Availability, Policies, Notifications, Reports, and Settings.",
+            "Navigation is usable on desktop and tablet.",
+            "Current section is visually clear.",
+            "User only sees sections allowed by their role.",
+            "Dashboard shell supports authenticated sessions."
+          ]
+        },
+        {
+          "key": "TBS-037",
+          "issueType": "Story",
+          "summary": "Build dashboard calendar view",
+          "description": "As a barber, I want a calendar view so I can see my daily and upcoming schedule.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Frontend / Backend",
+          "dependencies": [
+            "TBS-036",
+            "TBS-014"
+          ],
+          "labels": [
+            "calendar",
+            "dashboard"
+          ],
+          "acceptanceCriteria": [
+            "Calendar displays confirmed, upcoming, completed, canceled, and no-show appointments.",
+            "Calendar displays blocked time and walk-ins.",
+            "Calendar supports day and week views.",
+            "Calendar items show appointment time, customer name, service, and status.",
+            "Barber can open appointment details from the calendar."
+          ]
+        },
+        {
+          "key": "TBS-038",
+          "issueType": "Story",
+          "summary": "Build appointments list and detail view",
+          "description": "As a barber/admin, I want a searchable appointments list and detail page so I can manage appointment operations.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Frontend / Backend",
+          "dependencies": [
+            "TBS-036",
+            "TBS-014"
+          ],
+          "labels": [
+            "appointments",
+            "dashboard"
+          ],
+          "acceptanceCriteria": [
+            "Appointments list supports filtering by date, status, payment status, and customer.",
+            "Appointment detail shows service, add-ons, time, customer contact, messages, payment status, and policy status.",
+            "Barber/admin can update eligible appointment statuses.",
+            "Appointment detail shows secure customer appointment link.",
+            "Sensitive changes are audit logged."
+          ]
+        },
+        {
+          "key": "TBS-039",
+          "issueType": "Story",
+          "summary": "Build payments dashboard",
+          "description": "As an owner/admin, I want to view payments, deposits, tips, refunds, failed payments, and balances from one place.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Frontend / Backend / Payments",
+          "dependencies": [
+            "TBS-025"
+          ],
+          "labels": [
+            "payments",
+            "dashboard"
+          ],
+          "acceptanceCriteria": [
+            "Dashboard displays deposits, remaining balances, tips, refunds, and failed payments.",
+            "Payment records can be filtered by date, status, method, and appointment.",
+            "Payment records link back to appointment details.",
+            "Admin can see whether a payment was Stripe, Link, payment link, or in-person.",
+            "Payment dashboard supports refund and exception workflows where permitted."
+          ]
+        },
+        {
+          "key": "TBS-040",
+          "issueType": "Story",
+          "summary": "Build client list and client history",
+          "description": "As a barber/admin, I want to view client history so I can understand repeat visits and appointment context.",
+          "priority": "P1",
+          "status": "Backlog",
+          "ownerRole": "Frontend / Backend",
+          "dependencies": [
+            "TBS-038"
+          ],
+          "labels": [
+            "clients",
+            "crm"
+          ],
+          "acceptanceCriteria": [
+            "Dashboard includes client list with name, phone, email, and latest appointment.",
+            "Client detail shows appointment history.",
+            "Client detail shows payment and no-show/cancellation history where permitted.",
+            "Client detail links to related appointment messages.",
+            "Client records are created from guest bookings and walk-ins."
+          ]
+        },
+        {
+          "key": "TBS-041",
+          "issueType": "Story",
+          "summary": "Build service and pricing settings",
+          "description": "As an owner/admin, I want to manage services, add-ons, prices, durations, and deposits.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Dashboard / Backend",
+          "dependencies": [
+            "TBS-036",
+            "TBS-020"
+          ],
+          "labels": [
+            "services",
+            "pricing",
+            "settings"
+          ],
+          "acceptanceCriteria": [
+            "Admin can create, edit, disable, and reorder services.",
+            "Admin can create, edit, disable, and reorder add-ons.",
+            "Admin can set price and duration for services and add-ons.",
+            "Admin can set service-specific deposit rules.",
+            "Service/pricing changes are audit logged."
+          ]
+        },
+        {
+          "key": "TBS-042",
+          "issueType": "Story",
+          "summary": "Build availability settings dashboard",
+          "description": "As an owner/admin, I want to manage business hours, slot intervals, buffers, blocked days, and booking windows.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Dashboard / Backend",
+          "dependencies": [
+            "TBS-008",
+            "TBS-009",
+            "TBS-010"
+          ],
+          "labels": [
+            "availability",
+            "settings"
+          ],
+          "acceptanceCriteria": [
+            "Admin can edit business hours.",
+            "Admin can edit slot interval and buffer time.",
+            "Admin can edit minimum booking notice and maximum future booking window.",
+            "Admin can create vacation or closed days.",
+            "Availability changes are audit logged and reflected in customer booking flow."
+          ]
+        },
+        {
+          "key": "TBS-043",
+          "issueType": "Reporting",
+          "summary": "Build lightweight reporting dashboard",
+          "description": "As an owner/admin, I want lightweight reports so I can understand bookings, revenue, cancellations, no-shows, tips, and payment performance.",
+          "priority": "P1",
+          "status": "Backlog",
+          "ownerRole": "Frontend / Backend",
+          "dependencies": [
+            "TBS-038",
+            "TBS-039"
+          ],
+          "labels": [
+            "reports",
+            "analytics"
+          ],
+          "acceptanceCriteria": [
+            "Reports show appointment volume, completed bookings, cancellations, no-shows, and reschedules.",
+            "Reports show deposits collected, refunds, forfeitures, tips, and failed payments.",
+            "Reports can be filtered by date range.",
+            "Reports include service popularity.",
+            "Reports are visible only to authorized owner/admin users."
+          ]
+        },
+        {
+          "key": "TBS-044",
+          "issueType": "Story",
+          "summary": "Build notification settings dashboard",
+          "description": "As an owner/admin, I want to configure notification behavior for confirmations, reminders, receipts, cancellations, reschedules, and messages.",
+          "priority": "P1",
+          "status": "Backlog",
+          "ownerRole": "Dashboard / Backend",
+          "dependencies": [
+            "TBS-057"
+          ],
+          "labels": [
+            "notifications",
+            "settings"
+          ],
+          "acceptanceCriteria": [
+            "Admin can configure reminder timing.",
+            "Admin can enable or disable email reminder types where allowed.",
+            "Admin can enable or disable SMS reminder types where allowed.",
+            "Admin can preview notification templates or content summaries.",
+            "Notification setting changes are audit logged."
+          ]
+        }
+      ]
+    },
+    {
+      "key": "TBS-EP-006",
+      "issueType": "Epic",
+      "summary": "Authentication, Roles, Security, Privacy, and Auditability",
+      "description": "Implement secure access, customer appointment links, barber/admin authentication, role-based permissions, MFA, audit logs, encryption, privacy controls, and deletion request handling.",
+      "priority": "P0",
+      "status": "Backlog",
+      "ownerRole": "Security / Backend",
+      "labels": [
+        "security",
+        "privacy",
+        "rbac",
+        "audit",
+        "v1"
+      ],
+      "epicAcceptanceCriteria": [
+        "Owner/admin and barber users authenticate securely.",
+        "Owner/admin accounts support MFA.",
+        "Customers access appointment management through secure links.",
+        "Roles control access to dashboard capabilities.",
+        "Sensitive actions are audit logged."
+      ],
+      "tickets": [
+        {
+          "key": "TBS-045",
+          "issueType": "Security",
+          "summary": "Implement barber/admin authentication",
+          "description": "As a barber/admin, I need secure login so only authorized users can access the dashboard.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Backend / Security",
+          "dependencies": [],
+          "labels": [
+            "auth",
+            "dashboard"
+          ],
+          "acceptanceCriteria": [
+            "Barber/admin users can log in securely.",
+            "Invalid login attempts are rejected.",
+            "Sessions expire according to configured security rules.",
+            "Password reset or account recovery flow is available.",
+            "Dashboard routes require authentication."
+          ]
+        },
+        {
+          "key": "TBS-046",
+          "issueType": "Security",
+          "summary": "Implement role-based access control",
+          "description": "As the system, I need role-based permissions so customer, agent, barber, and owner/admin capabilities are properly separated.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Backend / Security",
+          "dependencies": [
+            "TBS-045"
+          ],
+          "labels": [
+            "rbac",
+            "permissions"
+          ],
+          "acceptanceCriteria": [
+            "System supports Customer/Guest, Customer-Side Agent, Barber, and Owner/Admin roles.",
+            "Barber can manage day-to-day appointment operations.",
+            "Owner/Admin can manage services, policies, payments, settings, refunds, and reports.",
+            "Unauthorized users cannot access restricted dashboard modules.",
+            "Permission checks are enforced server-side."
+          ]
+        },
+        {
+          "key": "TBS-047",
+          "issueType": "Security",
+          "summary": "Implement audit logging for sensitive actions",
+          "description": "As an owner/admin, I want sensitive changes to be auditable so operational and payment decisions can be traced.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Backend / Security",
+          "dependencies": [
+            "TBS-046"
+          ],
+          "labels": [
+            "audit_logs",
+            "compliance"
+          ],
+          "acceptanceCriteria": [
+            "Audit logs capture actor, timestamp, action, old value, new value, and reason note where applicable.",
+            "Appointment status changes are audit logged.",
+            "Payment refunds, forfeitures, and overrides are audit logged.",
+            "Policy, service, pricing, and availability changes are audit logged.",
+            "Audit logs cannot be deleted by standard dashboard users."
+          ]
+        },
+        {
+          "key": "TBS-048",
+          "issueType": "Security",
+          "summary": "Implement MFA for owner/admin accounts",
+          "description": "As an owner/admin, I need MFA to protect sensitive payment and policy settings.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Security",
+          "dependencies": [
+            "TBS-045",
+            "TBS-046"
+          ],
+          "labels": [
+            "mfa",
+            "admin_security"
+          ],
+          "acceptanceCriteria": [
+            "Owner/admin accounts can enroll in MFA.",
+            "Owner/admin login requires MFA after enrollment.",
+            "Recovery flow exists for lost MFA access.",
+            "Barber-only role can have MFA optional unless elevated permissions are granted.",
+            "MFA events are logged."
+          ]
+        },
+        {
+          "key": "TBS-049",
+          "issueType": "Security",
+          "summary": "Create secure customer appointment access links",
+          "description": "As a customer, I want to access my appointment without an account while keeping my appointment private.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Backend / Security",
+          "dependencies": [
+            "TBS-007"
+          ],
+          "labels": [
+            "secure_links",
+            "guest_access"
+          ],
+          "acceptanceCriteria": [
+            "Each appointment has a secure, hard-to-guess management link.",
+            "Secure link allows access only to that appointment's permitted customer actions.",
+            "Secure link cannot expose other customer or dashboard data.",
+            "Secure link access can be expired or revoked by admin if needed.",
+            "Sensitive actions from secure links are logged."
+          ]
+        },
+        {
+          "key": "TBS-050",
+          "issueType": "Security",
+          "summary": "Implement sensitive data protection and encryption requirements",
+          "description": "As the system, I need to protect customer, appointment, message, and payment-related data.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Backend / Security",
+          "dependencies": [],
+          "labels": [
+            "encryption",
+            "data_protection"
+          ],
+          "acceptanceCriteria": [
+            "Sensitive data is encrypted in transit.",
+            "Sensitive stored data is protected according to production security standards.",
+            "Raw payment credentials are never stored by the application.",
+            "Payment methods are tokenized through payment providers.",
+            "Access to sensitive data is restricted by role."
+          ]
+        },
+        {
+          "key": "TBS-051",
+          "issueType": "Security",
+          "summary": "Implement privacy controls and deletion request handling",
+          "description": "As a customer, I want basic privacy protections and a way to request deletion of my data.",
+          "priority": "P1",
+          "status": "Backlog",
+          "ownerRole": "Backend / Legal / Product",
+          "dependencies": [
+            "TBS-050"
+          ],
+          "labels": [
+            "privacy",
+            "data_deletion"
+          ],
+          "acceptanceCriteria": [
+            "Privacy policy is linked from public booking page.",
+            "Customer consents to required SMS/email communications during booking.",
+            "System supports internal handling of customer data deletion requests.",
+            "Deletion handling preserves legally or operationally required payment/audit records where needed.",
+            "Privacy-related actions are logged."
+          ]
+        }
+      ]
+    },
+    {
+      "key": "TBS-EP-007",
+      "issueType": "Epic",
+      "summary": "Messaging and Notifications",
+      "description": "Implement full appointment-linked chat, SMS/email relay, booking lifecycle notifications, reminders, receipts, refund notifications, and notification delivery logging.",
+      "priority": "P0",
+      "status": "Backlog",
+      "ownerRole": "Frontend / Backend / Communications",
+      "labels": [
+        "messaging",
+        "notifications",
+        "sms",
+        "email",
+        "v1"
+      ],
+      "epicAcceptanceCriteria": [
+        "Customers can message the barber without creating an account.",
+        "Barber can manage appointment-linked messages from dashboard.",
+        "SMS and email notifications support booking lifecycle events.",
+        "Notification delivery failures are logged.",
+        "Messaging history is preserved with appointments."
+      ],
+      "tickets": [
+        {
+          "key": "TBS-052",
+          "issueType": "Story",
+          "summary": "Build appointment-linked chat thread model",
+          "description": "As the system, I need message threads tied to appointments so customer/barber communication stays contextual.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Backend",
+          "dependencies": [
+            "TBS-014"
+          ],
+          "labels": [
+            "chat",
+            "messages"
+          ],
+          "acceptanceCriteria": [
+            "Each appointment can have one message thread.",
+            "Messages store sender, timestamp, content, and delivery status where available.",
+            "Message history is retained with the appointment.",
+            "Message access follows customer secure link and dashboard role permissions.",
+            "Message data is protected as sensitive customer communication."
+          ]
+        },
+        {
+          "key": "TBS-053",
+          "issueType": "Story",
+          "summary": "Build customer appointment chat UI",
+          "description": "As a customer, I want to message the barber from my secure appointment link.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Frontend",
+          "dependencies": [
+            "TBS-049",
+            "TBS-052"
+          ],
+          "labels": [
+            "chat",
+            "customer_experience"
+          ],
+          "acceptanceCriteria": [
+            "Customer can open appointment chat from secure appointment link.",
+            "Customer can send messages without creating an account.",
+            "Customer can view appointment-specific message history.",
+            "Customer receives clear success or failure feedback after sending a message.",
+            "Customer cannot access unrelated message threads."
+          ]
+        },
+        {
+          "key": "TBS-054",
+          "issueType": "Story",
+          "summary": "Build dashboard chat UI",
+          "description": "As a barber, I want to view and reply to appointment messages from the dashboard.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Frontend / Backend",
+          "dependencies": [
+            "TBS-036",
+            "TBS-052"
+          ],
+          "labels": [
+            "chat",
+            "dashboard"
+          ],
+          "acceptanceCriteria": [
+            "Barber can view all appointment-linked conversations.",
+            "Barber can reply to customer messages.",
+            "Messages are linked to appointment detail records.",
+            "Unread or new messages are visually indicated.",
+            "Message replies can trigger customer SMS/email relay notifications."
+          ]
+        },
+        {
+          "key": "TBS-055",
+          "issueType": "Integration",
+          "summary": "Integrate SMS provider",
+          "description": "As the system, I need SMS delivery for confirmations, reminders, messages, cancellations, reschedules, and payment links.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Backend / Communications",
+          "dependencies": [],
+          "labels": [
+            "sms",
+            "notifications"
+          ],
+          "acceptanceCriteria": [
+            "System can send SMS confirmation after booking.",
+            "System can send SMS appointment reminders.",
+            "System can send SMS alerts for messages.",
+            "System can send SMS cancellation and reschedule confirmations.",
+            "SMS delivery status or failure is logged when provider supports it."
+          ]
+        },
+        {
+          "key": "TBS-056",
+          "issueType": "Integration",
+          "summary": "Integrate email provider",
+          "description": "As the system, I need email delivery for confirmations, reminders, receipts, cancellations, reschedules, refunds, and messages.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Backend / Communications",
+          "dependencies": [],
+          "labels": [
+            "email",
+            "notifications"
+          ],
+          "acceptanceCriteria": [
+            "System can send booking confirmation email.",
+            "System can send appointment reminder email when enabled.",
+            "System can send payment receipt email.",
+            "System can send cancellation, reschedule, refund, and deposit forfeiture emails.",
+            "Email delivery failures are logged when provider supports it."
+          ]
+        },
+        {
+          "key": "TBS-057",
+          "issueType": "Story",
+          "summary": "Implement booking lifecycle notifications",
+          "description": "As a customer and barber, I want timely notifications when bookings, cancellations, reschedules, payments, refunds, or messages happen.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Backend",
+          "dependencies": [
+            "TBS-055",
+            "TBS-056",
+            "TBS-014",
+            "TBS-025"
+          ],
+          "labels": [
+            "notifications",
+            "booking_lifecycle"
+          ],
+          "acceptanceCriteria": [
+            "Confirmation notification is sent after appointment confirmation.",
+            "Reminder notifications are sent based on configured timing.",
+            "Cancellation notifications are sent after cancellation.",
+            "Reschedule notifications are sent after reschedule.",
+            "Payment receipt, refund, and deposit forfeiture notifications are sent when applicable."
+          ]
+        },
+        {
+          "key": "TBS-058",
+          "issueType": "Task",
+          "summary": "Log notification delivery failures",
+          "description": "As an admin, I want failed notifications to be logged so communication issues can be investigated.",
+          "priority": "P1",
+          "status": "Backlog",
+          "ownerRole": "Backend / Observability",
+          "dependencies": [
+            "TBS-057"
+          ],
+          "labels": [
+            "notification_logging",
+            "observability"
+          ],
+          "acceptanceCriteria": [
+            "Failed SMS sends are logged.",
+            "Failed email sends are logged.",
+            "Notification logs include recipient, event type, timestamp, and provider status when available.",
+            "Critical notification failures are visible to admin or monitoring.",
+            "Notification failures do not corrupt appointment status."
+          ]
+        }
+      ]
+    },
+    {
+      "key": "TBS-EP-008",
+      "issueType": "Epic",
+      "summary": "Integrations, Exports, and Calendar Sync",
+      "description": "Implement CSV exports, external calendar sync, and supporting integrations needed for production v1 operations.",
+      "priority": "P1",
+      "status": "Backlog",
+      "ownerRole": "Backend / Integrations",
+      "labels": [
+        "integrations",
+        "exports",
+        "calendar_sync",
+        "v1"
+      ],
+      "epicAcceptanceCriteria": [
+        "Owner/admin can export appointment and payment records.",
+        "Dashboard can sync appointments to an external calendar.",
+        "The product does not require accounting integrations for v1.",
+        "Integration failures are logged."
+      ],
+      "tickets": [
+        {
+          "key": "TBS-059",
+          "issueType": "Story",
+          "summary": "Export appointments as CSV",
+          "description": "As an owner/admin, I want to export appointment records so I can review or reconcile operations externally.",
+          "priority": "P1",
+          "status": "Backlog",
+          "ownerRole": "Backend / Dashboard",
+          "dependencies": [
+            "TBS-038"
+          ],
+          "labels": [
+            "csv_export",
+            "appointments"
+          ],
+          "acceptanceCriteria": [
+            "Admin can export appointments as CSV.",
+            "Export supports date range filtering.",
+            "Export includes customer, service, appointment time, status, payment status, and created date.",
+            "Export respects role permissions.",
+            "Export action is logged."
+          ]
+        },
+        {
+          "key": "TBS-060",
+          "issueType": "Story",
+          "summary": "Export payments as CSV",
+          "description": "As an owner/admin, I want to export payment records so I can reconcile deposits, balances, refunds, and tips.",
+          "priority": "P1",
+          "status": "Backlog",
+          "ownerRole": "Backend / Dashboard",
+          "dependencies": [
+            "TBS-039"
+          ],
+          "labels": [
+            "csv_export",
+            "payments"
+          ],
+          "acceptanceCriteria": [
+            "Admin can export payments as CSV.",
+            "Export supports date range and payment status filtering.",
+            "Export includes deposit, remaining balance, tip, refund, forfeiture, payment method/source, and appointment reference.",
+            "Export respects role permissions.",
+            "Export action is logged."
+          ]
+        },
+        {
+          "key": "TBS-061",
+          "issueType": "Integration",
+          "summary": "Implement external calendar sync",
+          "description": "As a barber, I want appointments synced to an external calendar so I can view my schedule outside the dashboard.",
+          "priority": "P1",
+          "status": "Backlog",
+          "ownerRole": "Backend / Integrations",
+          "dependencies": [
+            "TBS-037"
+          ],
+          "labels": [
+            "calendar_sync",
+            "google_calendar"
+          ],
+          "acceptanceCriteria": [
+            "Confirmed appointments can sync to external calendar.",
+            "Canceled or rescheduled appointments update external calendar entries.",
+            "Dashboard remains the source of truth for booking availability.",
+            "Calendar sync errors are logged.",
+            "Admin/barber can enable or disable calendar sync."
+          ]
+        }
+      ]
+    },
+    {
+      "key": "TBS-EP-009",
+      "issueType": "Epic",
+      "summary": "Production Reliability, Monitoring, and Observability",
+      "description": "Implement production monitoring, failure alerts, metrics tracking, webhook reliability, booking/payment observability, and safeguards against double-booking.",
+      "priority": "P0",
+      "status": "Backlog",
+      "ownerRole": "Backend / DevOps / QA",
+      "labels": [
+        "observability",
+        "monitoring",
+        "reliability",
+        "production_ready"
+      ],
+      "epicAcceptanceCriteria": [
+        "Critical booking and payment failures are monitored.",
+        "Webhook processing is reliable and idempotent.",
+        "System tracks key booking, payment, notification, and messaging metrics.",
+        "Double-booking protections are tested.",
+        "Admins can be alerted to critical failures."
+      ],
+      "tickets": [
+        {
+          "key": "TBS-062",
+          "issueType": "Task",
+          "summary": "Implement error monitoring",
+          "description": "As the operations team, I need error monitoring so production issues can be detected quickly.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "DevOps / Backend",
+          "dependencies": [],
+          "labels": [
+            "monitoring",
+            "errors"
+          ],
+          "acceptanceCriteria": [
+            "Frontend errors are captured.",
+            "Backend errors are captured.",
+            "Payment and booking errors are tagged for filtering.",
+            "Critical errors trigger alerts.",
+            "Monitoring avoids logging sensitive payment credentials."
+          ]
+        },
+        {
+          "key": "TBS-063",
+          "issueType": "Task",
+          "summary": "Track booking and payment funnel metrics",
+          "description": "As product/admin, I want metrics for booking and payment performance so v1 success can be measured.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Backend / Analytics",
+          "dependencies": [
+            "TBS-007",
+            "TBS-025"
+          ],
+          "labels": [
+            "analytics",
+            "metrics"
+          ],
+          "acceptanceCriteria": [
+            "System tracks booking page visits, booking starts, and booking completions.",
+            "System tracks booking abandonment.",
+            "System tracks payment success and failure rates.",
+            "System tracks Link approval delays, declines, and expirations.",
+            "System tracks no-shows, cancellations, reschedules, refunds, and forfeitures."
+          ]
+        },
+        {
+          "key": "TBS-064",
+          "issueType": "Task",
+          "summary": "Create booking and payment failure alerts",
+          "description": "As an admin/operator, I want alerts for critical booking and payment failures so issues can be resolved quickly.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Backend / DevOps",
+          "dependencies": [
+            "TBS-062",
+            "TBS-063"
+          ],
+          "labels": [
+            "alerts",
+            "booking_failures",
+            "payment_failures"
+          ],
+          "acceptanceCriteria": [
+            "Critical booking confirmation failures trigger alerts.",
+            "Payment webhook failures trigger alerts.",
+            "Repeated failed payments or checkout errors trigger alerts.",
+            "Link payment approval expiration spikes can be detected.",
+            "Alerts include enough context for investigation without exposing sensitive credentials."
+          ]
+        },
+        {
+          "key": "TBS-065",
+          "issueType": "Task",
+          "summary": "Implement idempotency and retry handling for payment webhooks",
+          "description": "As the system, I need payment webhook processing to be reliable and safe from duplicate events.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Backend / Payments",
+          "dependencies": [
+            "TBS-025"
+          ],
+          "labels": [
+            "webhooks",
+            "idempotency",
+            "retries"
+          ],
+          "acceptanceCriteria": [
+            "Duplicate webhook events do not create duplicate payments or refunds.",
+            "Webhook processing can safely retry failed events.",
+            "Webhook failures are recorded.",
+            "Payment state transitions remain consistent after retries.",
+            "Webhook processing includes tests for duplicate and out-of-order events."
+          ]
+        },
+        {
+          "key": "TBS-066",
+          "issueType": "Task",
+          "summary": "Test double-booking prevention",
+          "description": "As the business, I need confidence that two customers cannot book the same slot.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "QA / Backend",
+          "dependencies": [
+            "TBS-013",
+            "TBS-014"
+          ],
+          "labels": [
+            "qa",
+            "double_booking",
+            "scheduling"
+          ],
+          "acceptanceCriteria": [
+            "Automated tests cover simultaneous booking attempts for the same slot.",
+            "Automated tests cover expired slot holds.",
+            "Automated tests cover successful payment after slot hold.",
+            "Automated tests cover payment failure and slot release.",
+            "Manual QA verifies first successful payment/confirmation wins."
+          ]
+        }
+      ]
+    },
+    {
+      "key": "TBS-EP-010",
+      "issueType": "Epic",
+      "summary": "Design, Responsiveness, and Accessibility",
+      "description": "Apply the uploaded concept screens as screen/layout direction, build polished customer and dashboard UI, ensure responsive behavior, and meet accessibility expectations.",
+      "priority": "P1",
+      "status": "Backlog",
+      "ownerRole": "Design / Frontend / QA",
+      "labels": [
+        "design",
+        "accessibility",
+        "responsive",
+        "ux"
+      ],
+      "epicAcceptanceCriteria": [
+        "Public booking website is polished and mobile-first.",
+        "Dashboard is usable on desktop and tablet.",
+        "Concept images guide required screens and layout direction.",
+        "Product targets WCAG 2.2 AA accessibility.",
+        "Important flows are clear, readable, and easy to complete."
+      ],
+      "tickets": [
+        {
+          "key": "TBS-067",
+          "issueType": "Task",
+          "summary": "Translate concept images into screen requirements",
+          "description": "As the product team, I want the concept images translated into required screens and components while allowing final styling to evolve.",
+          "priority": "P1",
+          "status": "Backlog",
+          "ownerRole": "Design / Product",
+          "dependencies": [],
+          "labels": [
+            "design_requirements",
+            "mockups"
+          ],
+          "acceptanceCriteria": [
+            "Required customer booking screens are identified.",
+            "Required dashboard screens are identified.",
+            "Layout direction from concept images is documented.",
+            "Exact styling is not treated as locked unless separately approved.",
+            "Design requirements map back to PRD scope."
+          ]
+        },
+        {
+          "key": "TBS-068",
+          "issueType": "Story",
+          "summary": "Create mobile-first responsive booking UI",
+          "description": "As a customer, I want the booking experience to work smoothly on mobile.",
+          "priority": "P0",
+          "status": "Backlog",
+          "ownerRole": "Frontend / Design",
+          "dependencies": [
+            "TBS-001",
+            "TBS-067"
+          ],
+          "labels": [
+            "mobile_first",
+            "responsive",
+            "customer_ui"
+          ],
+          "acceptanceCriteria": [
+            "Booking page layout is optimized for mobile screens.",
+            "Tap targets are large enough for mobile use.",
+            "Service, time, policy, and payment steps are readable on small screens.",
+            "Booking flow works on common mobile browsers.",
+            "Desktop and tablet layouts remain usable."
+          ]
+        },
+        {
+          "key": "TBS-069",
+          "issueType": "Story",
+          "summary": "Create dashboard responsive UI",
+          "description": "As a barber/admin, I want the dashboard to work well on desktop and tablet.",
+          "priority": "P1",
+          "status": "Backlog",
+          "ownerRole": "Frontend / Design",
+          "dependencies": [
+            "TBS-036",
+            "TBS-067"
+          ],
+          "labels": [
+            "dashboard_ui",
+            "responsive"
+          ],
+          "acceptanceCriteria": [
+            "Dashboard is optimized for desktop use.",
+            "Dashboard is usable on tablet.",
+            "Calendar, appointments, messages, and payments views remain readable.",
+            "Navigation adapts to available screen size.",
+            "Critical appointment actions remain easy to access."
+          ]
+        },
+        {
+          "key": "TBS-070",
+          "issueType": "Task",
+          "summary": "Implement accessibility baseline",
+          "description": "As a customer or dashboard user, I want the product to be accessible and usable with assistive technologies.",
+          "priority": "P1",
+          "status": "Backlog",
+          "ownerRole": "Frontend / QA",
+          "dependencies": [
+            "TBS-068",
+            "TBS-069"
+          ],
+          "labels": [
+            "accessibility",
+            "wcag"
+          ],
+          "acceptanceCriteria": [
+            "Public booking forms have labels and accessible error states.",
+            "Dashboard navigation supports keyboard navigation.",
+            "Color contrast targets WCAG 2.2 AA.",
+            "Important UI states are not communicated by color alone.",
+            "Screen-reader-friendly labels are added to interactive controls."
+          ]
+        }
+      ]
+    }
+  ],
+  "launchReadinessChecklist": [
+    {
+      "area": "Booking",
+      "criteria": [
+        "Customer can complete a guest booking from the hosted public page.",
+        "Booking respects availability, service duration, add-ons, buffers, and blocked time.",
+        "Double-booking prevention is tested.",
+        "Customer can cancel and self-reschedule once."
+      ]
+    },
+    {
+      "area": "Payments",
+      "criteria": [
+        "Stripe deposit flow works.",
+        "No-deposit flow works.",
+        "Remaining balance flow works.",
+        "Tips work.",
+        "Refunds and deposit overrides work.",
+        "Payment webhooks are reliable and idempotent."
+      ]
+    },
+    {
+      "area": "Link Agents",
+      "criteria": [
+        "Agent-readable metadata endpoint works.",
+        "Agent-initiated booking request works.",
+        "Programmatic Link payment path works where supported.",
+        "Virtual-card fallback path works.",
+        "Delayed or declined Link approval releases held slot correctly."
+      ]
+    },
+    {
+      "area": "Dashboard",
+      "criteria": [
+        "Barber can view and manage calendar.",
+        "Barber can add walk-ins and blocked time.",
+        "Owner/admin can manage services, pricing, availability, policies, and notification settings.",
+        "Payments, refunds, tips, and failed payments are visible."
+      ]
+    },
+    {
+      "area": "Security",
+      "criteria": [
+        "Dashboard requires authenticated login.",
+        "Owner/admin MFA is available.",
+        "Customer appointment links are secure.",
+        "RBAC is enforced server-side.",
+        "Sensitive actions are audit logged."
+      ]
+    },
+    {
+      "area": "Communications",
+      "criteria": [
+        "SMS confirmations work.",
+        "Email confirmations work.",
+        "Appointment reminders work.",
+        "Chat notifications work.",
+        "Delivery failures are logged."
+      ]
+    },
+    {
+      "area": "Production",
+      "criteria": [
+        "Error monitoring is active.",
+        "Booking/payment failure alerts are active.",
+        "Critical metrics are tracked.",
+        "CSV exports work.",
+        "Calendar sync works.",
+        "Accessibility baseline is met."
+      ]
+    }
+  ]
+}
