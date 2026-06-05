@@ -28,15 +28,48 @@ export default function BookPage() {
   }
 
   const contactValid = contact.name.trim().length > 0 && /^\d{3}-\d{3}-\d{4}$/.test(contact.phone) && contact.email.includes("@");
+  const steps: Step[] = ["service", "time", "contact", "review", "confirmed"];
+
+  function canOpenStep(item: Step) {
+    if (item === "service" || item === "time" || item === "contact") {
+      return true;
+    }
+
+    if (item === "review") {
+      return contactValid;
+    }
+
+    return step === "confirmed";
+  }
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-4xl px-3 py-4 sm:px-5 sm:py-6">
       <Link href="/" className="inline-flex min-h-11 items-center text-sm font-bold text-amber-300">← {business.name}</Link>
       <div className="mt-3 rounded-3xl border border-stone-800 bg-stone-900 p-4 shadow-2xl sm:mt-6 sm:rounded-[2rem] sm:p-5 md:p-8">
         <div className="mb-6 flex snap-x gap-2 overflow-x-auto pb-1 text-xs font-bold uppercase tracking-wide text-stone-400 sm:mb-8 sm:flex-wrap sm:overflow-visible">
-          {(["service", "time", "contact", "review", "confirmed"] as Step[]).map((item) => (
-            <span key={item} className={`shrink-0 snap-start rounded-full px-3 py-2 ${item === step ? "bg-amber-400 text-stone-950" : "bg-stone-800"}`}>{item}</span>
-          ))}
+          {steps.map((item) => {
+            const active = item === step;
+            const available = canOpenStep(item);
+
+            return (
+              <button
+                key={item}
+                type="button"
+                disabled={!available}
+                onClick={() => available && setStep(item)}
+                aria-current={active ? "step" : undefined}
+                className={`shrink-0 snap-start rounded-full px-3 py-2 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-stone-900 ${
+                  active
+                    ? "bg-amber-400 text-stone-950"
+                    : available
+                      ? "bg-stone-800 text-stone-200 hover:bg-stone-700"
+                      : "cursor-not-allowed bg-stone-800/50 text-stone-500"
+                }`}
+              >
+                {item}
+              </button>
+            );
+          })}
         </div>
 
         {step === "service" && (
