@@ -27,7 +27,7 @@ export default function BookPage() {
     setSelectedAddOns((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
   }
 
-  const contactValid = contact.name && contact.phone.includes("-") && contact.email.includes("@");
+  const contactValid = contact.name.trim().length > 0 && /^\d{3}-\d{3}-\d{4}$/.test(contact.phone) && contact.email.includes("@");
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-4xl px-3 py-4 sm:px-5 sm:py-6">
@@ -46,14 +46,17 @@ export default function BookPage() {
             <fieldset className="mt-6 grid gap-3">
               <legend className="sr-only">Primary service</legend>
               {services.map((service) => (
-                <label key={service.id} className={`block cursor-pointer rounded-2xl border p-4 text-left transition active:scale-[0.99] ${service.id === serviceId ? "border-amber-300 bg-amber-300/10" : "border-stone-800 bg-stone-950"}`}>
+                <label
+                  key={service.id}
+                  className={`relative block min-h-24 touch-manipulation rounded-2xl border p-4 text-left transition hover:border-amber-300 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-amber-300 active:scale-[0.99] ${service.id === serviceId ? "border-amber-300 bg-amber-300/10" : "border-stone-800 bg-stone-950"}`}
+                >
                   <input
                     type="radio"
                     name="service"
                     value={service.id}
                     checked={service.id === serviceId}
                     onChange={() => setServiceId(service.id)}
-                    className="sr-only"
+                    className="absolute inset-0 z-10 cursor-pointer opacity-0"
                   />
                   <span className="flex items-start justify-between gap-3">
                     <span>
@@ -72,12 +75,15 @@ export default function BookPage() {
               {addOns.map((addOn) => {
                 const checked = selectedAddOns.includes(addOn.id);
                 return (
-                  <label key={addOn.id} className={`block cursor-pointer rounded-2xl border p-4 text-left transition active:scale-[0.99] ${checked ? "border-amber-300 bg-amber-300/10" : "border-stone-800 bg-stone-950"}`}>
+                  <label
+                    key={addOn.id}
+                    className={`relative block min-h-24 touch-manipulation rounded-2xl border p-4 text-left transition hover:border-amber-300 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-amber-300 active:scale-[0.99] ${checked ? "border-amber-300 bg-amber-300/10" : "border-stone-800 bg-stone-950"}`}
+                  >
                     <input
                       type="checkbox"
                       checked={checked}
                       onChange={() => toggleAddOn(addOn.id)}
-                      className="sr-only"
+                      className="absolute inset-0 z-10 cursor-pointer opacity-0"
                     />
                     <span className="block font-bold">{addOn.name}</span>
                     <span className="mt-1 block text-sm text-stone-400">{money(addOn.price)} · +{addOn.durationMinutes} min</span>
@@ -97,8 +103,18 @@ export default function BookPage() {
             <fieldset className="mt-6 grid gap-3 sm:grid-cols-2">
               <legend className="sr-only">Available appointment times</legend>
               {availableSlots.map((time) => (
-                <label key={time} className={`block cursor-pointer rounded-2xl border p-4 text-left font-bold transition active:scale-[0.99] ${slot === time ? "border-amber-300 bg-amber-300/10" : "border-stone-800 bg-stone-950"}`}>
-                  <input type="radio" name="slot" value={time} checked={slot === time} onChange={() => setSlot(time)} className="sr-only" />
+                <label
+                  key={time}
+                  className={`relative block min-h-16 touch-manipulation rounded-2xl border p-4 text-left font-bold transition hover:border-amber-300 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-amber-300 active:scale-[0.99] ${slot === time ? "border-amber-300 bg-amber-300/10" : "border-stone-800 bg-stone-950"}`}
+                >
+                  <input
+                    type="radio"
+                    name="slot"
+                    value={time}
+                    checked={slot === time}
+                    onChange={() => setSlot(time)}
+                    className="absolute inset-0 z-10 cursor-pointer opacity-0"
+                  />
                   {time}
                 </label>
               ))}
@@ -113,7 +129,13 @@ export default function BookPage() {
             <p className="mt-2 text-stone-400">No account required. We only need the basics.</p>
             <div className="mt-6 grid gap-4">
               <Input label="Name" value={contact.name} onChange={(name) => setContact({ ...contact, name })} placeholder="Kevin Barber" />
-              <Input label="Phone" value={contact.phone} onChange={(phone) => setContact({ ...contact, phone })} placeholder="555-010-2323" inputMode="tel" />
+              <Input
+                label="Phone"
+                value={contact.phone}
+                onChange={(phone) => setContact({ ...contact, phone: formatPhoneNumber(phone) })}
+                placeholder="555-010-2323"
+                inputMode="tel"
+              />
               <Input label="Email" value={contact.email} onChange={(email) => setContact({ ...contact, email })} placeholder="you@example.com" inputMode="email" />
             </div>
             {!contactValid && <p className="mt-4 rounded-xl bg-red-500/10 p-3 text-sm text-red-200">Enter a name, phone with a dash, and valid email before review.</p>}
@@ -162,4 +184,19 @@ function Nav({ onBack, onNext, next, disabled }: { onBack: () => void; onNext: (
 
 function Input({ label, value, onChange, placeholder, inputMode }: { label: string; value: string; onChange: (value: string) => void; placeholder: string; inputMode?: "text" | "tel" | "email" }) {
   return <label className="grid gap-2 text-sm font-bold text-stone-300">{label}<input value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} inputMode={inputMode} className="min-h-12 rounded-2xl border border-stone-800 bg-stone-950 px-4 py-3 text-white outline-none focus:border-amber-300" /></label>;
+}
+
+function formatPhoneNumber(value: string) {
+  const rawDigits = value.replace(/\D/g, "");
+  const digits = (rawDigits.length > 10 && rawDigits.startsWith("1") ? rawDigits.slice(1) : rawDigits).slice(0, 10);
+
+  if (digits.length <= 3) {
+    return digits;
+  }
+
+  if (digits.length <= 6) {
+    return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+  }
+
+  return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
 }
