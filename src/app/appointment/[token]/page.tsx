@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AppointmentActions } from "@/components/AppointmentActions";
 import { business, money, services } from "@/lib/business-data";
 
 export default async function AppointmentPage({ params }: { params: Promise<{ token: string }> }) {
@@ -18,11 +19,7 @@ export default async function AppointmentPage({ params }: { params: Promise<{ to
           <p><strong className="text-white">Location:</strong> {business.location}</p>
           <p className="text-xs text-stone-500">Token preview: {token}</p>
         </div>
-        <div className="mt-6 grid gap-3 sm:grid-cols-3">
-          <button className="rounded-2xl bg-amber-400 px-4 py-3 font-black text-stone-950">Reschedule once</button>
-          <button className="rounded-2xl border border-stone-700 px-4 py-3 font-bold">Cancel</button>
-          <button className="rounded-2xl border border-stone-700 px-4 py-3 font-bold">Message barber</button>
-        </div>
+        <AppointmentActions />
       </section>
     </main>
   );

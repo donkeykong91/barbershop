@@ -1,5 +1,6 @@
 import { demoAppointments } from "@/lib/appointments";
 import { availabilitySettings } from "@/lib/settings";
+import { CalendarActions } from "@/components/CalendarActions";
 
 export default function CalendarPage() {
   return (
@@ -18,7 +19,7 @@ export default function CalendarPage() {
           <div className="mt-4 grid gap-3">
             {availabilitySettings.blockedTime.map((block) => <div key={block.id} className="rounded-xl bg-stone-50 p-3 text-sm"><strong>{block.label}</strong><p className="text-stone-600">{block.day} · {block.start}-{block.end}</p></div>)}
           </div>
-          <button className="mt-5 w-full rounded-xl bg-stone-950 px-4 py-3 font-bold text-white">Add walk-in / block</button>
+          <CalendarActions />
         </aside>
       </div>
     </div>
