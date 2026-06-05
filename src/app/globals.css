@@ -24,3 +24,7 @@ body {
 a { color: inherit; text-decoration: none; }
 
 input, select, textarea, button { font: inherit; }
+
+button:not(:disabled), [role="button"], a[href] {
+  cursor: pointer;
+}
