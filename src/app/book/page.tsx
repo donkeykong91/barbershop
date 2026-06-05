@@ -8,18 +8,18 @@ type Step = "service" | "time" | "contact" | "review" | "confirmed";
 
 export default function BookPage() {
   const [step, setStep] = useState<Step>("service");
-  const [serviceId, setServiceId] = useState(services[0].id);
+  const [serviceId, setServiceId] = useState<string | null>(null);
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
-  const [slot, setSlot] = useState(availableSlots[0]);
+  const [slot, setSlot] = useState("");
   const [contact, setContact] = useState({ name: "", phone: "", email: "" });
   const [policyAccepted, setPolicyAccepted] = useState(false);
 
-  const selectedService = services.find((service) => service.id === serviceId) ?? services[0];
+  const selectedService = services.find((service) => service.id === serviceId);
   const chosenAddOns = addOns.filter((addOn) => selectedAddOns.includes(addOn.id));
   const totals = useMemo(() => {
     return chosenAddOns.reduce(
       (sum, addOn) => ({ price: sum.price + addOn.price, duration: sum.duration + addOn.durationMinutes }),
-      { price: selectedService.price, duration: selectedService.durationMinutes },
+      { price: selectedService?.price ?? 0, duration: selectedService?.durationMinutes ?? 0 },
     );
   }, [chosenAddOns, selectedService]);
 
@@ -27,16 +27,26 @@ export default function BookPage() {
     setSelectedAddOns((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
   }
 
+  const serviceValid = Boolean(selectedService);
+  const timeValid = Boolean(slot);
   const contactValid = contact.name.trim().length > 0 && /^\d{3}-\d{3}-\d{4}$/.test(contact.phone) && contact.email.includes("@");
   const steps: Step[] = ["service", "time", "contact", "review", "confirmed"];
 
   function canOpenStep(item: Step) {
-    if (item === "service" || item === "time" || item === "contact") {
+    if (item === "service") {
       return true;
     }
 
+    if (item === "time") {
+      return serviceValid;
+    }
+
+    if (item === "contact") {
+      return serviceValid && timeValid;
+    }
+
     if (item === "review") {
-      return contactValid;
+      return serviceValid && timeValid && contactValid;
     }
 
     return step === "confirmed";
@@ -124,8 +134,8 @@ export default function BookPage() {
                 );
               })}
             </fieldset>
-            <Summary price={totals.price} duration={totals.duration} deposit={selectedService.deposit} />
-            <button type="button" onClick={() => setStep("time")} className="mt-6 min-h-14 w-full rounded-2xl bg-amber-400 px-5 py-4 font-black text-stone-950 active:scale-[0.99]">Continue to availability</button>
+            {selectedService && <Summary price={totals.price} duration={totals.duration} deposit={selectedService.deposit} />}
+            <button type="button" disabled={!serviceValid} onClick={() => serviceValid && setStep("time")} className="mt-6 min-h-14 w-full rounded-2xl bg-amber-400 px-5 py-4 font-black text-stone-950 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40">Continue to availability</button>
           </section>
         )}
 
@@ -152,7 +162,7 @@ export default function BookPage() {
                 </label>
               ))}
             </fieldset>
-            <Nav onBack={() => setStep("service")} onNext={() => setStep("contact")} next="Continue to contact" />
+            <Nav onBack={() => setStep("service")} onNext={() => timeValid && setStep("contact")} next="Continue to contact" disabled={!timeValid} />
           </section>
         )}
 
@@ -176,7 +186,7 @@ export default function BookPage() {
           </section>
         )}
 
-        {step === "review" && (
+        {step === "review" && selectedService && (
           <section>
             <h1 className="text-3xl font-black">Review and policy</h1>
             <div className="mt-6 rounded-2xl border border-stone-800 bg-stone-950 p-5 text-sm text-stone-300">
