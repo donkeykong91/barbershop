@@ -5,9 +5,11 @@ import Link from "next/link";
 import { addOns, availableSlots, business, money, services } from "@/lib/business-data";
 
 type Step = "service" | "time" | "contact" | "review" | "confirmed";
+const steps: Step[] = ["service", "time", "contact", "review", "confirmed"];
 
 export default function BookPage() {
   const [step, setStep] = useState<Step>("service");
+  const [furthestStep, setFurthestStep] = useState<Step>("service");
   const [serviceId, setServiceId] = useState<string | null>(null);
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
   const [slot, setSlot] = useState("");
@@ -27,16 +29,27 @@ export default function BookPage() {
     setSlot("");
     setContact({ name: "", phone: "", email: "" });
     setPolicyAccepted(false);
+    setFurthestStep("service");
   }
 
   function resetAfterTimeChange() {
     setContact({ name: "", phone: "", email: "" });
     setPolicyAccepted(false);
+    setFurthestStep("time");
   }
 
   function resetAfterContactChange(nextContact: typeof contact) {
     setContact(nextContact);
     setPolicyAccepted(false);
+    setFurthestStep("contact");
+  }
+
+  function updatePolicyAccepted(accepted: boolean) {
+    setPolicyAccepted(accepted);
+
+    if (!accepted) {
+      setFurthestStep("review");
+    }
   }
 
   function chooseService(id: string) {
@@ -63,26 +76,14 @@ export default function BookPage() {
   const serviceValid = Boolean(selectedService);
   const timeValid = Boolean(slot);
   const contactValid = contact.name.trim().length > 0 && /^\d{3}-\d{3}-\d{4}$/.test(contact.phone) && contact.email.includes("@");
-  const steps: Step[] = ["service", "time", "contact", "review", "confirmed"];
 
   function canOpenStep(item: Step) {
-    if (item === "service") {
-      return true;
-    }
+    return steps.indexOf(item) <= steps.indexOf(furthestStep);
+  }
 
-    if (item === "time") {
-      return serviceValid;
-    }
-
-    if (item === "contact") {
-      return serviceValid && timeValid;
-    }
-
-    if (item === "review") {
-      return serviceValid && timeValid && contactValid;
-    }
-
-    return step === "confirmed";
+  function advanceTo(nextStep: Step) {
+    setFurthestStep((current) => steps.indexOf(nextStep) > steps.indexOf(current) ? nextStep : current);
+    setStep(nextStep);
   }
 
   return (
@@ -168,7 +169,7 @@ export default function BookPage() {
               })}
             </fieldset>
             {selectedService && <Summary price={totals.price} duration={totals.duration} deposit={selectedService.deposit} />}
-            <button type="button" disabled={!serviceValid} onClick={() => serviceValid && setStep("time")} className="mt-6 min-h-14 w-full rounded-2xl bg-amber-400 px-5 py-4 font-black text-stone-950 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40">Continue to availability</button>
+            <button type="button" disabled={!serviceValid} onClick={() => serviceValid && advanceTo("time")} className="mt-6 min-h-14 w-full rounded-2xl bg-amber-400 px-5 py-4 font-black text-stone-950 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40">Continue to availability</button>
           </section>
         )}
 
@@ -195,7 +196,7 @@ export default function BookPage() {
                 </label>
               ))}
             </fieldset>
-            <Nav onBack={() => setStep("service")} onNext={() => timeValid && setStep("contact")} next="Continue to contact" disabled={!timeValid} />
+            <Nav onBack={() => setStep("service")} onNext={() => timeValid && advanceTo("contact")} next="Continue to contact" disabled={!timeValid} />
           </section>
         )}
 
@@ -215,7 +216,7 @@ export default function BookPage() {
               <Input label="Email" value={contact.email} onChange={(email) => resetAfterContactChange({ ...contact, email })} placeholder="you@example.com" inputMode="email" />
             </div>
             {!contactValid && <p className="mt-4 rounded-xl bg-red-500/10 p-3 text-sm text-red-200">Enter a name, phone with a dash, and valid email before review.</p>}
-            <Nav onBack={() => setStep("time")} onNext={() => contactValid && setStep("review")} next="Review booking" disabled={!contactValid} />
+            <Nav onBack={() => setStep("time")} onNext={() => contactValid && advanceTo("review")} next="Review booking" disabled={!contactValid} />
           </section>
         )}
 
@@ -230,10 +231,10 @@ export default function BookPage() {
               <p><strong className="text-white">Contact:</strong> {contact.name}, {contact.phone}, {contact.email}</p>
             </div>
             <label className="mt-5 flex cursor-pointer gap-3 rounded-2xl border border-stone-800 bg-stone-950 p-4 text-sm text-stone-300">
-              <input type="checkbox" checked={policyAccepted} onChange={(event) => setPolicyAccepted(event.target.checked)} className="mt-1 size-5 accent-amber-400" />
+              <input type="checkbox" checked={policyAccepted} onChange={(event) => updatePolicyAccepted(event.target.checked)} className="mt-1 size-5 accent-amber-400" />
               <span>I acknowledge the cancellation policy: {business.cancellationPolicy}</span>
             </label>
-            <Nav onBack={() => setStep("contact")} onNext={() => policyAccepted && setStep("confirmed")} next={selectedService.deposit ? "Pay deposit and confirm" : "Confirm booking"} disabled={!policyAccepted} />
+            <Nav onBack={() => setStep("contact")} onNext={() => policyAccepted && advanceTo("confirmed")} next={selectedService.deposit ? "Pay deposit and confirm" : "Confirm booking"} disabled={!policyAccepted} />
           </section>
         )}
 
