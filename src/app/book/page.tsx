@@ -7,7 +7,7 @@ import { addOns, availableSlots, business, money, services } from "@/lib/busines
 type Step = "service" | "time" | "contact" | "review" | "confirmed";
 const steps: Step[] = ["service", "time", "contact", "review", "confirmed"];
 type Contact = { name: string; phone: string; email: string };
-type PendingServiceReset = { serviceId: string };
+type PendingServiceStepReset = { kind: "service"; serviceId: string } | { kind: "add-on"; addOnId: string };
 
 export default function BookPage() {
   const [step, setStep] = useState<Step>("service");
@@ -17,7 +17,7 @@ export default function BookPage() {
   const [slot, setSlot] = useState("");
   const [contact, setContact] = useState<Contact>({ name: "", phone: "", email: "" });
   const [policyAccepted, setPolicyAccepted] = useState(false);
-  const [pendingServiceReset, setPendingServiceReset] = useState<PendingServiceReset | null>(null);
+  const [pendingServiceStepReset, setPendingServiceStepReset] = useState<PendingServiceStepReset | null>(null);
 
   const selectedService = services.find((service) => service.id === serviceId);
   const chosenAddOns = addOns.filter((addOn) => selectedAddOns.includes(addOn.id));
@@ -78,7 +78,7 @@ export default function BookPage() {
     }
 
     if (shouldConfirmServiceReset()) {
-      setPendingServiceReset({ serviceId: id });
+      setPendingServiceStepReset({ kind: "service", serviceId: id });
       return;
     }
 
@@ -104,6 +104,11 @@ export default function BookPage() {
   }
 
   function toggleAddOn(id: string) {
+    if (shouldConfirmServiceReset()) {
+      setPendingServiceStepReset({ kind: "add-on", addOnId: id });
+      return;
+    }
+
     applyAddOnChange(id);
   }
 
@@ -119,13 +124,18 @@ export default function BookPage() {
     resetAfterContactChange(nextContact);
   }
 
-  function confirmPendingServiceReset() {
-    if (!pendingServiceReset) {
+  function confirmPendingServiceStepReset() {
+    if (!pendingServiceStepReset) {
       return;
     }
 
-    applyServiceChange(pendingServiceReset.serviceId);
-    setPendingServiceReset(null);
+    if (pendingServiceStepReset.kind === "service") {
+      applyServiceChange(pendingServiceStepReset.serviceId);
+    } else {
+      applyAddOnChange(pendingServiceStepReset.addOnId);
+    }
+
+    setPendingServiceStepReset(null);
   }
 
   const serviceValid = Boolean(selectedService);
@@ -302,14 +312,14 @@ export default function BookPage() {
           </section>
         )}
       </div>
-      {pendingServiceReset && (
+      {pendingServiceStepReset && (
         <div className="fixed inset-0 z-50 flex items-end bg-black/70 p-4 sm:items-center sm:justify-center" role="dialog" aria-modal="true" aria-labelledby="booking-reset-title">
           <div className="w-full max-w-md rounded-2xl border border-stone-700 bg-stone-950 p-5 shadow-2xl">
             <h2 id="booking-reset-title" className="text-xl font-black text-white">Restart from this step?</h2>
             <p className="mt-3 text-sm leading-6 text-stone-300">{serviceResetMessage}</p>
             <div className="mt-5 grid gap-3 sm:flex sm:justify-end">
-              <button type="button" onClick={() => setPendingServiceReset(null)} className="min-h-12 rounded-2xl border border-stone-700 px-4 py-3 font-bold text-stone-100 active:scale-[0.99]">Keep current booking</button>
-              <button type="button" onClick={confirmPendingServiceReset} className="min-h-12 rounded-2xl bg-amber-400 px-4 py-3 font-black text-stone-950 active:scale-[0.99]">Restart from here</button>
+              <button type="button" onClick={() => setPendingServiceStepReset(null)} className="min-h-12 rounded-2xl border border-stone-700 px-4 py-3 font-bold text-stone-100 active:scale-[0.99]">Keep current booking</button>
+              <button type="button" onClick={confirmPendingServiceStepReset} className="min-h-12 rounded-2xl bg-amber-400 px-4 py-3 font-black text-stone-950 active:scale-[0.99]">Restart from here</button>
             </div>
           </div>
         </div>
@@ -345,4 +355,4 @@ function formatPhoneNumber(value: string) {
   return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
 }
 
-const serviceResetMessage = "Changing your service will clear your selected time, contact details, and review progress so you can continue with an accurate booking.";
+const serviceResetMessage = "Changing your service details will clear your selected time, contact details, and review progress so you can continue with an accurate booking.";
