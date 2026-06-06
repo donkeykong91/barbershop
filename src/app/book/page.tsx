@@ -23,7 +23,40 @@ export default function BookPage() {
     );
   }, [chosenAddOns, selectedService]);
 
+  function resetAfterServiceChange() {
+    setSlot("");
+    setContact({ name: "", phone: "", email: "" });
+    setPolicyAccepted(false);
+  }
+
+  function resetAfterTimeChange() {
+    setContact({ name: "", phone: "", email: "" });
+    setPolicyAccepted(false);
+  }
+
+  function resetAfterContactChange(nextContact: typeof contact) {
+    setContact(nextContact);
+    setPolicyAccepted(false);
+  }
+
+  function chooseService(id: string) {
+    if (serviceId !== id) {
+      resetAfterServiceChange();
+    }
+
+    setServiceId(id);
+  }
+
+  function chooseSlot(time: string) {
+    if (slot !== time) {
+      resetAfterTimeChange();
+    }
+
+    setSlot(time);
+  }
+
   function toggleAddOn(id: string) {
+    resetAfterServiceChange();
     setSelectedAddOns((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
   }
 
@@ -98,7 +131,7 @@ export default function BookPage() {
                     name="service"
                     value={service.id}
                     checked={service.id === serviceId}
-                    onChange={() => setServiceId(service.id)}
+                    onChange={() => chooseService(service.id)}
                     className="absolute inset-0 z-10 cursor-pointer opacity-0"
                   />
                   <span className="flex items-start justify-between gap-3">
@@ -155,7 +188,7 @@ export default function BookPage() {
                     name="slot"
                     value={time}
                     checked={slot === time}
-                    onChange={() => setSlot(time)}
+                    onChange={() => chooseSlot(time)}
                     className="absolute inset-0 z-10 cursor-pointer opacity-0"
                   />
                   {time}
@@ -171,15 +204,15 @@ export default function BookPage() {
             <h1 className="text-3xl font-black">Guest contact</h1>
             <p className="mt-2 text-stone-400">No account required. We only need the basics.</p>
             <div className="mt-6 grid gap-4">
-              <Input label="Name" value={contact.name} onChange={(name) => setContact({ ...contact, name })} placeholder="Kevin Barber" />
+              <Input label="Name" value={contact.name} onChange={(name) => resetAfterContactChange({ ...contact, name })} placeholder="Kevin Barber" />
               <Input
                 label="Phone"
                 value={contact.phone}
-                onChange={(phone) => setContact({ ...contact, phone: formatPhoneNumber(phone) })}
+                onChange={(phone) => resetAfterContactChange({ ...contact, phone: formatPhoneNumber(phone) })}
                 placeholder="555-010-2323"
                 inputMode="tel"
               />
-              <Input label="Email" value={contact.email} onChange={(email) => setContact({ ...contact, email })} placeholder="you@example.com" inputMode="email" />
+              <Input label="Email" value={contact.email} onChange={(email) => resetAfterContactChange({ ...contact, email })} placeholder="you@example.com" inputMode="email" />
             </div>
             {!contactValid && <p className="mt-4 rounded-xl bg-red-500/10 p-3 text-sm text-red-200">Enter a name, phone with a dash, and valid email before review.</p>}
             <Nav onBack={() => setStep("time")} onNext={() => contactValid && setStep("review")} next="Review booking" disabled={!contactValid} />
