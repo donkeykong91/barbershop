@@ -7,11 +7,7 @@ import { addOns, availableSlots, business, money, services } from "@/lib/busines
 type Step = "service" | "time" | "contact" | "review" | "confirmed";
 const steps: Step[] = ["service", "time", "contact", "review", "confirmed"];
 type Contact = { name: string; phone: string; email: string };
-type PendingReset =
-  | { kind: "service"; serviceId: string }
-  | { kind: "add-on"; addOnId: string }
-  | { kind: "time"; slot: string }
-  | { kind: "contact"; contact: Contact };
+type PendingServiceReset = { serviceId: string };
 
 export default function BookPage() {
   const [step, setStep] = useState<Step>("service");
@@ -21,7 +17,7 @@ export default function BookPage() {
   const [slot, setSlot] = useState("");
   const [contact, setContact] = useState<Contact>({ name: "", phone: "", email: "" });
   const [policyAccepted, setPolicyAccepted] = useState(false);
-  const [pendingReset, setPendingReset] = useState<PendingReset | null>(null);
+  const [pendingServiceReset, setPendingServiceReset] = useState<PendingServiceReset | null>(null);
 
   const selectedService = services.find((service) => service.id === serviceId);
   const chosenAddOns = addOns.filter((addOn) => selectedAddOns.includes(addOn.id));
@@ -71,14 +67,6 @@ export default function BookPage() {
     return hasProgressAfter("service") || Boolean(slot) || hasContactData() || policyAccepted;
   }
 
-  function shouldConfirmTimeReset() {
-    return hasProgressAfter("time") || hasContactData() || policyAccepted;
-  }
-
-  function shouldConfirmContactReset() {
-    return hasProgressAfter("contact") || policyAccepted;
-  }
-
   function applyServiceChange(id: string) {
     resetAfterServiceChange();
     setServiceId(id);
@@ -90,7 +78,7 @@ export default function BookPage() {
     }
 
     if (shouldConfirmServiceReset()) {
-      setPendingReset({ kind: "service", serviceId: id });
+      setPendingServiceReset({ serviceId: id });
       return;
     }
 
@@ -107,11 +95,6 @@ export default function BookPage() {
       return;
     }
 
-    if (shouldConfirmTimeReset()) {
-      setPendingReset({ kind: "time", slot: time });
-      return;
-    }
-
     applySlotChange(time);
   }
 
@@ -121,11 +104,6 @@ export default function BookPage() {
   }
 
   function toggleAddOn(id: string) {
-    if (shouldConfirmServiceReset()) {
-      setPendingReset({ kind: "add-on", addOnId: id });
-      return;
-    }
-
     applyAddOnChange(id);
   }
 
@@ -138,30 +116,16 @@ export default function BookPage() {
       return;
     }
 
-    if (shouldConfirmContactReset()) {
-      setPendingReset({ kind: "contact", contact: nextContact });
-      return;
-    }
-
     resetAfterContactChange(nextContact);
   }
 
-  function confirmPendingReset() {
-    if (!pendingReset) {
+  function confirmPendingServiceReset() {
+    if (!pendingServiceReset) {
       return;
     }
 
-    if (pendingReset.kind === "service") {
-      applyServiceChange(pendingReset.serviceId);
-    } else if (pendingReset.kind === "add-on") {
-      applyAddOnChange(pendingReset.addOnId);
-    } else if (pendingReset.kind === "time") {
-      applySlotChange(pendingReset.slot);
-    } else {
-      resetAfterContactChange(pendingReset.contact);
-    }
-
-    setPendingReset(null);
+    applyServiceChange(pendingServiceReset.serviceId);
+    setPendingServiceReset(null);
   }
 
   const serviceValid = Boolean(selectedService);
@@ -338,14 +302,14 @@ export default function BookPage() {
           </section>
         )}
       </div>
-      {pendingReset && (
+      {pendingServiceReset && (
         <div className="fixed inset-0 z-50 flex items-end bg-black/70 p-4 sm:items-center sm:justify-center" role="dialog" aria-modal="true" aria-labelledby="booking-reset-title">
           <div className="w-full max-w-md rounded-2xl border border-stone-700 bg-stone-950 p-5 shadow-2xl">
             <h2 id="booking-reset-title" className="text-xl font-black text-white">Restart from this step?</h2>
-            <p className="mt-3 text-sm leading-6 text-stone-300">{resetMessageFor(pendingReset.kind)}</p>
+            <p className="mt-3 text-sm leading-6 text-stone-300">{serviceResetMessage}</p>
             <div className="mt-5 grid gap-3 sm:flex sm:justify-end">
-              <button type="button" onClick={() => setPendingReset(null)} className="min-h-12 rounded-2xl border border-stone-700 px-4 py-3 font-bold text-stone-100 active:scale-[0.99]">Keep current booking</button>
-              <button type="button" onClick={confirmPendingReset} className="min-h-12 rounded-2xl bg-amber-400 px-4 py-3 font-black text-stone-950 active:scale-[0.99]">Restart from here</button>
+              <button type="button" onClick={() => setPendingServiceReset(null)} className="min-h-12 rounded-2xl border border-stone-700 px-4 py-3 font-bold text-stone-100 active:scale-[0.99]">Keep current booking</button>
+              <button type="button" onClick={confirmPendingServiceReset} className="min-h-12 rounded-2xl bg-amber-400 px-4 py-3 font-black text-stone-950 active:scale-[0.99]">Restart from here</button>
             </div>
           </div>
         </div>
@@ -381,14 +345,4 @@ function formatPhoneNumber(value: string) {
   return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
 }
 
-function resetMessageFor(kind: PendingReset["kind"]) {
-  if (kind === "service" || kind === "add-on") {
-    return "Changing your service details will clear your selected time, contact details, and review progress so you can continue with an accurate booking.";
-  }
-
-  if (kind === "time") {
-    return "Changing your appointment time will clear contact and review progress so the booking stays lined up with the new slot.";
-  }
-
-  return "Changing contact details will send this booking back through review before it can be confirmed.";
-}
+const serviceResetMessage = "Changing your service will clear your selected time, contact details, and review progress so you can continue with an accurate booking.";
