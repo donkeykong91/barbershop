@@ -8,6 +8,7 @@ type Step = "service" | "time" | "contact" | "review" | "confirmed";
 const steps: Step[] = ["service", "time", "contact", "review", "confirmed"];
 type Contact = { name: string; phone: string; email: string };
 type PendingServiceStepReset = { kind: "service"; serviceId: string } | { kind: "add-on"; addOnId: string };
+type BookingResult = { appointmentId: string; managementUrl: string; status: string };
 
 export default function BookPage() {
   const [step, setStep] = useState<Step>("service");
@@ -18,6 +19,9 @@ export default function BookPage() {
   const [contact, setContact] = useState<Contact>({ name: "", phone: "", email: "" });
   const [policyAccepted, setPolicyAccepted] = useState(false);
   const [pendingServiceStepReset, setPendingServiceStepReset] = useState<PendingServiceStepReset | null>(null);
+  const [bookingResult, setBookingResult] = useState<BookingResult | null>(null);
+  const [bookingError, setBookingError] = useState("");
+  const [isSubmittingBooking, setIsSubmittingBooking] = useState(false);
 
   const selectedService = services.find((service) => service.id === serviceId);
   const chosenAddOns = addOns.filter((addOn) => selectedAddOns.includes(addOn.id));
@@ -32,23 +36,30 @@ export default function BookPage() {
     setSlot("");
     setContact({ name: "", phone: "", email: "" });
     setPolicyAccepted(false);
+    setBookingResult(null);
+    setBookingError("");
     setFurthestStep("service");
   }
 
   function resetAfterTimeChange() {
     setContact({ name: "", phone: "", email: "" });
     setPolicyAccepted(false);
+    setBookingResult(null);
+    setBookingError("");
     setFurthestStep("time");
   }
 
   function resetAfterContactChange(nextContact: Contact) {
     setContact(nextContact);
     setPolicyAccepted(false);
+    setBookingResult(null);
+    setBookingError("");
     setFurthestStep("contact");
   }
 
   function updatePolicyAccepted(accepted: boolean) {
     setPolicyAccepted(accepted);
+    setBookingError("");
 
     if (!accepted) {
       setFurthestStep("review");
@@ -140,7 +151,7 @@ export default function BookPage() {
 
   const serviceValid = Boolean(selectedService);
   const timeValid = Boolean(slot);
-  const contactValid = contact.name.trim().length > 0 && /^\d{3}-\d{3}-\d{4}$/.test(contact.phone) && contact.email.includes("@");
+  const contactValid = contact.name.trim().length > 0 && /^\d{3}-\d{3}-\d{4}$/.test(contact.phone) && isValidEmail(contact.email);
 
   function canOpenStep(item: Step) {
     return steps.indexOf(item) <= steps.indexOf(furthestStep);
@@ -149,6 +160,52 @@ export default function BookPage() {
   function advanceTo(nextStep: Step) {
     setFurthestStep((current) => steps.indexOf(nextStep) > steps.indexOf(current) ? nextStep : current);
     setStep(nextStep);
+  }
+
+  async function createBookingRecord() {
+    if (!selectedService) {
+      throw new Error("Choose a service before confirming.");
+    }
+
+    const response = await fetch("/api/bookings", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        serviceId: selectedService.id,
+        addOnIds: selectedAddOns,
+        slot,
+        customer: contact,
+      }),
+    });
+    const payload = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(payload.error ?? "Booking could not be confirmed. Try again.");
+    }
+
+    setBookingResult({
+      appointmentId: payload.appointmentId,
+      managementUrl: payload.managementUrl,
+      status: payload.status,
+    });
+    advanceTo("confirmed");
+  }
+
+  async function submitBooking() {
+    if (!policyAccepted || !selectedService || !slot || isSubmittingBooking || bookingResult) {
+      return;
+    }
+
+    setIsSubmittingBooking(true);
+    setBookingError("");
+
+    try {
+      await createBookingRecord();
+    } catch (error) {
+      setBookingError(error instanceof Error ? error.message : "Booking could not be confirmed. Try again.");
+    } finally {
+      setIsSubmittingBooking(false);
+    }
   }
 
   return (
@@ -299,16 +356,19 @@ export default function BookPage() {
               <input type="checkbox" checked={policyAccepted} onChange={(event) => updatePolicyAccepted(event.target.checked)} className="mt-1 size-5 accent-amber-400" />
               <span>I acknowledge the cancellation policy: {business.cancellationPolicy}</span>
             </label>
-            <Nav onBack={() => setStep("contact")} onNext={() => policyAccepted && advanceTo("confirmed")} next={selectedService.deposit ? "Pay deposit and confirm" : "Confirm booking"} disabled={!policyAccepted} />
+            {selectedService.deposit > 0 && <p className="mt-4 rounded-xl bg-amber-300/10 p-3 text-sm text-amber-100">This service requires a {money(selectedService.deposit)} deposit. Checkout is pending integration, so this request will be saved as pending deposit instead of confirmed.</p>}
+            {bookingError && <p className="mt-4 rounded-xl bg-red-500/10 p-3 text-sm text-red-200">{bookingError}</p>}
+            <Nav onBack={() => setStep("contact")} onNext={submitBooking} next={bookingResult ? "Booking already created" : isSubmittingBooking ? "Working..." : selectedService.deposit ? "Request pending booking" : "Confirm booking"} disabled={!policyAccepted || isSubmittingBooking || Boolean(bookingResult)} />
           </section>
         )}
 
         {step === "confirmed" && (
           <section className="text-center">
             <p className="mx-auto mb-4 flex size-14 items-center justify-center rounded-full bg-green-400 text-2xl text-stone-950">✓</p>
-            <h1 className="text-3xl font-black">Booking confirmed</h1>
-            <p className="mt-3 text-stone-300">You are booked for {slot}. A confirmation notification and secure appointment link will be sent to {contact.email || "your email"}.</p>
-            <Link href="/appointment/demo-token" className="mt-8 inline-flex min-h-14 items-center rounded-2xl bg-amber-400 px-6 py-4 font-black text-stone-950">Open secure appointment link</Link>
+            <h1 className="text-3xl font-black">{bookingResult?.status === "Pending Deposit" ? "Booking pending deposit" : "Booking confirmed"}</h1>
+            <p className="mt-3 text-stone-300">{bookingResult?.status === "Pending Deposit" ? `Your requested time is held for ${slot}. The appointment will be confirmed after payment checkout is connected and the deposit is collected.` : `You are booked for ${slot}. A confirmation notification and secure appointment link will be sent to ${contact.email || "your email"}.`}</p>
+            {bookingResult && <p className="mt-3 text-sm text-stone-400">Appointment ID: {bookingResult.appointmentId}</p>}
+            <Link href={bookingResult?.managementUrl ?? "/appointment/demo-token"} className="mt-8 inline-flex min-h-14 items-center rounded-2xl bg-amber-400 px-6 py-4 font-black text-stone-950">Open secure appointment link</Link>
           </section>
         )}
       </div>
@@ -353,6 +413,10 @@ function formatPhoneNumber(value: string) {
   }
 
   return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
+
+function isValidEmail(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim());
 }
 
 const serviceResetMessage = "Changing your service details will clear your selected time, contact details, and review progress so you can continue with an accurate booking.";
