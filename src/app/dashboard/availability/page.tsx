@@ -1,4 +1,4 @@
-import { availabilitySettings } from "@/lib/settings";
+import { availabilitySettings, timeRangeLabel } from "@/lib/settings";
 
 export default function AvailabilityPage() {
   return (
@@ -6,13 +6,13 @@ export default function AvailabilityPage() {
       <h1 className="text-3xl font-black">Availability</h1>
       <p className="mt-2 text-stone-600">Business hours, booking windows, slot intervals, buffers, and blocked time.</p>
       <section className="mt-6 grid gap-4 lg:grid-cols-[1fr_0.8fr]">
-        <div className="rounded-2xl border border-stone-200 bg-white p-5">
+        <div className="rounded-2xl border border-stone-200 bg-white p-4 sm:p-5">
           <h2 className="font-black">Business hours</h2>
-          <div className="mt-4 divide-y divide-stone-100">
+          <div className="mt-4 grid gap-2 sm:block sm:divide-y sm:divide-stone-100">
             {availabilitySettings.businessHours.map((hours) => (
-              <div key={hours.day} className="flex items-center justify-between py-3 text-sm">
+              <div key={hours.day} className="rounded-xl bg-stone-50 p-3 text-sm sm:flex sm:items-center sm:justify-between sm:rounded-none sm:bg-transparent sm:px-0 sm:py-3">
                 <span className="font-bold">{hours.day}</span>
-                <span className="text-stone-600">{hours.closed ? "Closed" : `${hours.open}–${hours.close}`}</span>
+                <span className="mt-1 block text-stone-600 sm:mt-0">{hours.closed ? "Closed" : timeRangeLabel(hours.open, hours.close)}</span>
               </div>
             ))}
           </div>
@@ -32,7 +32,7 @@ export default function AvailabilityPage() {
             {availabilitySettings.blockedTime.map((block) => (
               <div key={block.id} className="rounded-xl bg-stone-50 p-4 text-sm">
                 <p className="font-bold">{block.label}</p>
-                <p className="text-stone-600">{block.day} · {block.start}–{block.end}</p>
+                <p className="text-stone-600">{block.day} · {timeRangeLabel(block.start, block.end)}</p>
               </div>
             ))}
           </div>

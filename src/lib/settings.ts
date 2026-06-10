@@ -26,3 +26,22 @@ export const availabilitySettings = {
     { id: "inventory", label: "Inventory run", day: "Friday", start: "15:00", end: "16:00" },
   ],
 };
+
+export function timeLabel(time: string) {
+  const match = /^([01]\d|2[0-3]):([0-5]\d)$/.exec(time);
+
+  if (!match) {
+    return time;
+  }
+
+  const hour = Number(match[1]);
+  const minute = match[2];
+  const period = hour >= 12 ? "PM" : "AM";
+  const displayHour = hour % 12 || 12;
+
+  return `${displayHour}:${minute} ${period}`;
+}
+
+export function timeRangeLabel(start: string, end: string) {
+  return `${timeLabel(start)} to ${timeLabel(end)}`;
+}

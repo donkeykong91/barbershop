@@ -1,5 +1,5 @@
 import { demoAppointments } from "@/lib/appointments";
-import { availabilitySettings } from "@/lib/settings";
+import { availabilitySettings, timeRangeLabel } from "@/lib/settings";
 import { CalendarActions } from "@/components/CalendarActions";
 
 export default function CalendarPage() {
@@ -17,7 +17,7 @@ export default function CalendarPage() {
         <aside className="rounded-2xl border border-stone-200 bg-white p-5">
           <h2 className="font-black">Blocked time</h2>
           <div className="mt-4 grid gap-3">
-            {availabilitySettings.blockedTime.map((block) => <div key={block.id} className="rounded-xl bg-stone-50 p-3 text-sm"><strong>{block.label}</strong><p className="text-stone-600">{block.day} · {block.start}-{block.end}</p></div>)}
+            {availabilitySettings.blockedTime.map((block) => <div key={block.id} className="rounded-xl bg-stone-50 p-3 text-sm"><strong>{block.label}</strong><p className="text-stone-600">{block.day} · {timeRangeLabel(block.start, block.end)}</p></div>)}
           </div>
           <CalendarActions />
         </aside>
