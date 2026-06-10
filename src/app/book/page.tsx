@@ -224,12 +224,12 @@ export default function BookPage() {
                 disabled={!available}
                 onClick={() => available && setStep(item)}
                 aria-current={active ? "step" : undefined}
-                className={`shrink-0 snap-start rounded-full px-3 py-2 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-stone-900 ${
+                className={`shrink-0 snap-start rounded-full px-3 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-stone-900 ${
                   active
                     ? "bg-amber-400 text-stone-950"
                     : available
-                      ? "bg-stone-800 text-stone-200 hover:bg-stone-700"
-                      : "cursor-not-allowed bg-stone-800/50 text-stone-500"
+                      ? "bg-stone-950 text-white ring-1 ring-stone-500 hover:bg-stone-900"
+                      : "cursor-not-allowed bg-stone-950 text-white opacity-60 ring-1 ring-stone-700"
                 }`}
               >
                 {item}
@@ -368,7 +368,7 @@ export default function BookPage() {
             <h1 className="text-3xl font-black">{bookingResult?.status === "Pending Deposit" ? "Booking pending deposit" : "Booking confirmed"}</h1>
             <p className="mt-3 text-stone-300">{bookingResult?.status === "Pending Deposit" ? `Your requested time is held for ${slot}. The appointment will be confirmed after payment checkout is connected and the deposit is collected.` : `You are booked for ${slot}. A confirmation notification and secure appointment link will be sent to ${contact.email || "your email"}.`}</p>
             {bookingResult && <p className="mt-3 text-sm text-stone-400">Appointment ID: {bookingResult.appointmentId}</p>}
-            <Link href={bookingResult?.managementUrl ?? "/appointment/demo-token"} className="mt-8 inline-flex min-h-14 items-center rounded-2xl bg-amber-400 px-6 py-4 font-black text-stone-950">Open secure appointment link</Link>
+            <Link href={bookingResult?.managementUrl ?? "/appointment/demo-token"} className="mt-8 inline-flex min-h-14 items-center rounded-2xl bg-amber-400 px-6 py-4 font-black !text-stone-950">Open secure appointment link</Link>
           </section>
         )}
       </div>
